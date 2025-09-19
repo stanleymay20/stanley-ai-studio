@@ -2,41 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Modern Data Science Portfolio Design System */
 
 @layer base {
   :root {
+    /* Core Colors - Professional Data Science Theme */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
+    --foreground: 224 71.4% 4.1%;
+    
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 224 71.4% 4.1%;
+    
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
+    --popover-foreground: 224 71.4% 4.1%;
+    
+    /* Primary - Professional Blue */
+    --primary: 221.2 83.2% 53.3%;
     --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
+    --primary-glow: 217.2 91.2% 59.8%;
+    
+    /* Secondary - Elegant Grays */
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
+    
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    
+    /* Accent - Electric Blue for Data/AI Theme */
+    --accent: 199 89% 48%;
+    --accent-foreground: 210 40% 98%;
+    --accent-glow: 199 89% 64%;
+    
+    /* Success - For Metrics & Results */
+    --success: 142.1 76.2% 36.3%;
+    --success-foreground: 355.7 100% 97.3%;
+    
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
+    
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 221.2 83.2% 53.3%;
+    
+    --radius: 0.75rem;
+    
+    /* Portfolio-Specific Variables */
+    --hero-gradient: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 50%, hsl(var(--primary-glow)) 100%);
+    --card-gradient: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(220 14.3% 97.9%) 100%);
+    --glass-bg: hsla(var(--background), 0.8);
+    --glass-border: hsla(var(--border), 0.2);
+    
+    /* Animations & Shadows */
+    --shadow-soft: 0 4px 6px -1px hsla(var(--primary), 0.1), 0 2px 4px -1px hsla(var(--primary), 0.06);
+    --shadow-medium: 0 10px 15px -3px hsla(var(--primary), 0.1), 0 4px 6px -2px hsla(var(--primary), 0.05);
+    --shadow-large: 0 25px 50px -12px hsla(var(--primary), 0.25);
+    --shadow-glow: 0 0 0 1px hsla(var(--primary), 0.05), 0 0 20px hsla(var(--primary-glow), 0.3);
+    
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+    /* Typography Scale */
+    --font-size-hero: clamp(3rem, 8vw, 6rem);
+    --font-size-xl: clamp(2rem, 4vw, 3rem);
+    --font-size-lg: clamp(1.5rem, 3vw, 2rem);
+    
+    /* Spacing Scale */
+    --spacing-section: clamp(4rem, 8vw, 8rem);
+    --spacing-component: clamp(2rem, 4vw, 4rem);
 
     --sidebar-background: 0 0% 98%;
 
@@ -56,41 +88,49 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    /* Dark Mode - Sophisticated Data Science Theme */
+    --background: 224 71.4% 4.1%;
     --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
+    
+    --card: 224 71.4% 6.1%;
     --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
+    
+    --popover: 224 71.4% 4.1%;
     --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
+    
+    /* Primary - Bright Blue in Dark Mode */
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 224 71.4% 4.1%;
+    --primary-glow: 199 89% 64%;
+    
+    /* Secondary - Dark Grays */
+    --secondary: 215 27.9% 16.9%;
     --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
+    
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    
+    /* Accent - Electric Cyan in Dark Mode */
+    --accent: 199 89% 64%;
+    --accent-foreground: 224 71.4% 4.1%;
+    --accent-glow: 199 89% 48%;
+    
+    /* Success - Bright Green */
+    --success: 142.1 70.6% 45.3%;
+    --success-foreground: 144.9 80.4% 10%;
+    
+    --destructive: 0 72.2% 50.6%;
     --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 217.2 91.2% 59.8%;
+    
+    /* Dark Mode Specific Gradients */
+    --hero-gradient: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 50%, hsl(var(--primary-glow)) 100%);
+    --card-gradient: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(215 27.9% 8.9%) 100%);
+    --glass-bg: hsla(var(--background), 0.8);
+    --glass-border: hsla(var(--border), 0.2);
   }
 }
 
@@ -100,6 +140,144 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans scroll-smooth;
+  }
+}
+
+@layer components {
+  /* Portfolio-specific component styles */
+  .hero-gradient {
+    background: var(--hero-gradient);
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease infinite;
+  }
+  
+  .card-gradient {
+    background: var(--card-gradient);
+  }
+  
+  .glass-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  
+  .text-hero {
+    font-size: var(--font-size-hero);
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  
+  .text-display {
+    font-size: var(--font-size-xl);
+    line-height: 1.2;
+    font-weight: 700;
+  }
+  
+  .text-title {
+    font-size: var(--font-size-lg);
+    line-height: 1.3;
+    font-weight: 600;
+  }
+  
+  .section-spacing {
+    padding-top: var(--spacing-section);
+    padding-bottom: var(--spacing-section);
+  }
+  
+  .component-spacing {
+    padding-top: var(--spacing-component);
+    padding-bottom: var(--spacing-component);
+  }
+  
+  /* Interactive Elements */
+  .project-card {
+    transition: var(--transition-smooth);
+    transform-origin: center;
+    @apply hover:scale-105 hover:shadow-lg;
+  }
+  
+  .skill-badge {
+    transition: var(--transition-spring);
+    @apply hover:scale-110;
+  }
+  
+  .glow-effect {
+    box-shadow: var(--shadow-glow);
+  }
+}
+
+@layer utilities {
+  /* Custom Animations */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-fade-in-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+  }
+  
+  .animate-slide-in-left {
+    animation: slide-in-left 0.6s ease-out forwards;
+  }
+  
+  .animate-slide-in-right {
+    animation: slide-in-right 0.6s ease-out forwards;
+  }
+  
+  .animate-stagger-1 { animation-delay: 0.1s; }
+  .animate-stagger-2 { animation-delay: 0.2s; }
+  .animate-stagger-3 { animation-delay: 0.3s; }
+  .animate-stagger-4 { animation-delay: 0.4s; }
+  
+  /* Custom Shadow Utilities */
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-medium { box-shadow: var(--shadow-medium); }
+  .shadow-large { box-shadow: var(--shadow-large); }
+}
+
+/* Keyframe Animations */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
