@@ -1,19 +1,21 @@
-import Header from "@/components/Header";
-import Hero from "@/components/Hero";
-import Projects from "@/components/Projects";
-import About from "@/components/About";
-import Footer from "@/components/Footer";
+import ProfileHeader from "@/components/ProfileHeader";
+import AboutSection from "@/components/AboutSection";
+import EducationSection from "@/components/EducationSection";
+import CareerSection from "@/components/CareerSection";
+import ProjectsSection from "@/components/ProjectsSection";
+import MembershipsSection from "@/components/MembershipsSection";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
-      <Header />
       <main>
-        <Hero />
-        <Projects />
-        <About />
+        <ProfileHeader />
+        <AboutSection />
+        <EducationSection />
+        <CareerSection />
+        <ProjectsSection />
+        <MembershipsSection />
       </main>
-      <Footer />
     </div>
   );
 };

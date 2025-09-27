@@ -2,135 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Modern Data Science Portfolio Design System */
-
 @layer base {
   :root {
-    /* Core Colors - Professional Data Science Theme */
+    /* Clean professional theme - Light mode */
     --background: 0 0% 100%;
-    --foreground: 224 71.4% 4.1%;
-    
+    --foreground: 220 9% 15%;
     --card: 0 0% 100%;
-    --card-foreground: 224 71.4% 4.1%;
-    
+    --card-foreground: 220 9% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
-    
-    /* Primary - Professional Blue */
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --primary-glow: 217.2 91.2% 59.8%;
-    
-    /* Secondary - Elegant Grays */
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
-    
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
-    
-    /* Accent - Electric Blue for Data/AI Theme */
-    --accent: 199 89% 48%;
-    --accent-foreground: 210 40% 98%;
-    --accent-glow: 199 89% 64%;
-    
-    /* Success - For Metrics & Results */
-    --success: 142.1 76.2% 36.3%;
-    --success-foreground: 355.7 100% 97.3%;
-    
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    
+    --popover-foreground: 220 9% 15%;
+    --primary: 200 85% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 5% 96%;
+    --secondary-foreground: 220 9% 15%;
+    --muted: 220 5% 96%;
+    --muted-foreground: 220 4% 45%;
+    --accent: 160 75% 35%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 200 85% 40%;
+    --radius: 0.5rem;
     
-    --radius: 0.75rem;
+    /* Shadows */
+    --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+    --shadow-medium: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
+    --shadow-large: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
     
-    /* Portfolio-Specific Variables */
-    --hero-gradient: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 50%, hsl(var(--primary-glow)) 100%);
-    --card-gradient: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(220 14.3% 97.9%) 100%);
-    --glass-bg: hsla(var(--background), 0.8);
-    --glass-border: hsla(var(--border), 0.2);
+    /* Typography scale */
+    --text-hero: clamp(3rem, 6vw, 4.5rem);
+    --text-display: clamp(2rem, 4vw, 3rem);
+    --text-heading: clamp(1.5rem, 3vw, 2rem);
+    --text-body: 1rem;
     
-    /* Animations & Shadows */
-    --shadow-soft: 0 4px 6px -1px hsla(var(--primary), 0.1), 0 2px 4px -1px hsla(var(--primary), 0.06);
-    --shadow-medium: 0 10px 15px -3px hsla(var(--primary), 0.1), 0 4px 6px -2px hsla(var(--primary), 0.05);
-    --shadow-large: 0 25px 50px -12px hsla(var(--primary), 0.25);
-    --shadow-glow: 0 0 0 1px hsla(var(--primary), 0.05), 0 0 20px hsla(var(--primary-glow), 0.3);
-    
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-spring: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    
-    /* Typography Scale */
-    --font-size-hero: clamp(3rem, 8vw, 6rem);
-    --font-size-xl: clamp(2rem, 4vw, 3rem);
-    --font-size-lg: clamp(1.5rem, 3vw, 2rem);
-    
-    /* Spacing Scale */
-    --spacing-section: clamp(4rem, 8vw, 8rem);
-    --spacing-component: clamp(2rem, 4vw, 4rem);
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Transitions */
+    --transition-smooth: all 0.2s ease-in-out;
   }
 
   .dark {
-    /* Dark Mode - Sophisticated Data Science Theme */
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 40% 98%;
+    --background: 220 15% 8%;
+    --foreground: 0 0% 95%;
+    --card: 220 15% 10%;
+    --card-foreground: 0 0% 95%;
+    --popover: 220 15% 10%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 200 85% 55%;
+    --primary-foreground: 220 15% 8%;
+    --secondary: 220 10% 20%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 220 10% 20%;
+    --muted-foreground: 220 5% 65%;
+    --accent: 160 75% 45%;
+    --accent-foreground: 220 15% 8%;
+    --border: 220 10% 20%;
+    --input: 220 10% 20%;
+    --ring: 200 85% 55%;
     
-    --card: 224 71.4% 6.1%;
-    --card-foreground: 210 40% 98%;
-    
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 40% 98%;
-    
-    /* Primary - Bright Blue in Dark Mode */
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 224 71.4% 4.1%;
-    --primary-glow: 199 89% 64%;
-    
-    /* Secondary - Dark Grays */
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 40% 98%;
-    
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    
-    /* Accent - Electric Cyan in Dark Mode */
-    --accent: 199 89% 64%;
-    --accent-foreground: 224 71.4% 4.1%;
-    --accent-glow: 199 89% 48%;
-    
-    /* Success - Bright Green */
-    --success: 142.1 70.6% 45.3%;
-    --success-foreground: 144.9 80.4% 10%;
-    
-    --destructive: 0 72.2% 50.6%;
-    --destructive-foreground: 210 40% 98%;
-    
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 217.2 91.2% 59.8%;
-    
-    /* Dark Mode Specific Gradients */
-    --hero-gradient: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 50%, hsl(var(--primary-glow)) 100%);
-    --card-gradient: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(215 27.9% 8.9%) 100%);
-    --glass-bg: hsla(var(--background), 0.8);
-    --glass-border: hsla(var(--border), 0.2);
+    /* Shadows for dark mode */
+    --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.4);
+    --shadow-medium: 0 4px 6px -1px hsl(0 0% 0% / 0.4);
+    --shadow-large: 0 10px 15px -3px hsl(0 0% 0% / 0.4);
   }
 }
 
@@ -138,146 +71,62 @@
   * {
     @apply border-border;
   }
-
   body {
-    @apply bg-background text-foreground font-sans scroll-smooth;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  
+  html {
+    scroll-behavior: smooth;
   }
 }
 
 @layer components {
-  /* Portfolio-specific component styles */
-  .hero-gradient {
-    background: var(--hero-gradient);
-    background-size: 200% 200%;
-    animation: gradient-shift 8s ease infinite;
+  /* Section spacing */
+  .section-spacing {
+    @apply py-16 lg:py-20;
   }
   
-  .card-gradient {
-    background: var(--card-gradient);
+  /* Card components */
+  .profile-card {
+    @apply bg-card border border-border rounded-lg shadow-soft hover:shadow-medium transition-all duration-200;
   }
   
-  .glass-card {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+  .project-card {
+    @apply bg-card border border-border rounded-lg p-6 hover:shadow-medium transition-all duration-200 hover:-translate-y-1;
   }
   
+  /* Button styles */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-md font-medium transition-colors duration-200;
+  }
+  
+  .btn-outline {
+    @apply border border-primary text-primary hover:bg-primary hover:text-primary-foreground px-6 py-3 rounded-md font-medium transition-all duration-200;
+  }
+  
+  /* Typography */
   .text-hero {
-    font-size: var(--font-size-hero);
-    line-height: 1.1;
-    font-weight: 800;
-    letter-spacing: -0.02em;
+    font-size: var(--text-hero);
+    @apply font-bold leading-tight tracking-tight;
   }
   
   .text-display {
-    font-size: var(--font-size-xl);
-    line-height: 1.2;
-    font-weight: 700;
+    font-size: var(--text-display);
+    @apply font-bold leading-tight;
   }
   
-  .text-title {
-    font-size: var(--font-size-lg);
-    line-height: 1.3;
-    font-weight: 600;
+  .text-heading {
+    font-size: var(--text-heading);
+    @apply font-semibold leading-tight;
   }
   
-  .section-spacing {
-    padding-top: var(--spacing-section);
-    padding-bottom: var(--spacing-section);
+  /* Layout helpers */
+  .container-narrow {
+    @apply max-w-4xl mx-auto px-4 sm:px-6 lg:px-8;
   }
   
-  .component-spacing {
-    padding-top: var(--spacing-component);
-    padding-bottom: var(--spacing-component);
-  }
-  
-  /* Interactive Elements */
-  .project-card {
-    transition: var(--transition-smooth);
-    transform-origin: center;
-    @apply hover:scale-105 hover:shadow-lg;
-  }
-  
-  .skill-badge {
-    transition: var(--transition-spring);
-    @apply hover:scale-110;
-  }
-  
-  .glow-effect {
-    box-shadow: var(--shadow-glow);
-  }
-}
-
-@layer utilities {
-  /* Custom Animations */
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-  
-  .animate-fade-in-up {
-    animation: fade-in-up 0.8s ease-out forwards;
-  }
-  
-  .animate-slide-in-left {
-    animation: slide-in-left 0.6s ease-out forwards;
-  }
-  
-  .animate-slide-in-right {
-    animation: slide-in-right 0.6s ease-out forwards;
-  }
-  
-  .animate-stagger-1 { animation-delay: 0.1s; }
-  .animate-stagger-2 { animation-delay: 0.2s; }
-  .animate-stagger-3 { animation-delay: 0.3s; }
-  .animate-stagger-4 { animation-delay: 0.4s; }
-  
-  /* Custom Shadow Utilities */
-  .shadow-soft { box-shadow: var(--shadow-soft); }
-  .shadow-medium { box-shadow: var(--shadow-medium); }
-  .shadow-large { box-shadow: var(--shadow-large); }
-}
-
-/* Keyframe Animations */
-@keyframes gradient-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-}
-
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slide-in-left {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slide-in-right {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+  /* Professional badge */
+  .professional-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-secondary text-secondary-foreground border border-border;
   }
 }
