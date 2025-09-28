@@ -2,9 +2,8 @@ import { GraduationCap } from "lucide-react";
 
 const EducationSection = () => {
   return (
-    <section className="section-spacing bg-muted/30">
-      <div className="container-narrow">
-        <h2 className="text-display text-foreground mb-8">Education</h2>
+    <div className="bg-card rounded-lg p-6 mb-6 border border-border">
+      <h2 className="text-lg font-semibold text-foreground mb-4 uppercase tracking-wide">Education</h2>
         <div className="profile-card p-8">
           <div className="flex items-start gap-4">
             <div className="p-3 bg-primary/10 rounded-lg">
@@ -26,8 +25,7 @@ const EducationSection = () => {
             </div>
           </div>
         </div>
-      </div>
-    </section>
+    </div>
   );
 };
 

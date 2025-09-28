@@ -19,9 +19,8 @@ const CareerSection = () => {
   ];
 
   return (
-    <section className="section-spacing bg-background">
-      <div className="container-narrow">
-        <h2 className="text-display text-foreground mb-8">Professional Career</h2>
+    <div className="bg-card rounded-lg p-6 mb-6 border border-border">
+      <h2 className="text-lg font-semibold text-foreground mb-4 uppercase tracking-wide">Professional Career</h2>
         <div className="space-y-6">
           {experiences.map((exp, index) => (
             <div key={index} className="profile-card p-8">
@@ -49,8 +48,7 @@ const CareerSection = () => {
             </div>
           ))}
         </div>
-      </div>
-    </section>
+    </div>
   );
 };
 

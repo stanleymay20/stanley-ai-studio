@@ -8,13 +8,22 @@ import MembershipsSection from "@/components/MembershipsSection";
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
-      <main>
-        <ProfileHeader />
-        <ProjectsSection />
-        <EducationSection />
-        <CareerSection />
-        <MembershipsSection />
-      </main>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Left Sidebar */}
+          <div className="lg:col-span-4">
+            <ProfileHeader />
+            <EducationSection />
+            <CareerSection />
+            <MembershipsSection />
+          </div>
+          
+          {/* Right Content */}
+          <div className="lg:col-span-8">
+            <ProjectsSection />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
