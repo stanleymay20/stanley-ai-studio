@@ -4,20 +4,20 @@
 
 @layer base {
   :root {
-    /* Clean professional theme - Light mode */
+    /* Modern data science portfolio theme - Light mode */
     --background: 0 0% 100%;
-    --foreground: 220 9% 15%;
+    --foreground: 225 15% 15%;
     --card: 0 0% 100%;
-    --card-foreground: 220 9% 15%;
+    --card-foreground: 225 15% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 9% 15%;
-    --primary: 200 85% 40%;
+    --popover-foreground: 225 15% 15%;
+    --primary: 217 100% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 5% 96%;
-    --secondary-foreground: 220 9% 15%;
-    --muted: 220 5% 96%;
-    --muted-foreground: 220 4% 45%;
-    --accent: 160 75% 35%;
+    --secondary: 220 10% 96%;
+    --secondary-foreground: 225 15% 15%;
+    --muted: 220 10% 96%;
+    --muted-foreground: 225 8% 50%;
+    --accent: 217 100% 50%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
@@ -48,14 +48,14 @@
     --card-foreground: 0 0% 95%;
     --popover: 220 15% 10%;
     --popover-foreground: 0 0% 95%;
-    --primary: 200 85% 55%;
-    --primary-foreground: 220 15% 8%;
-    --secondary: 220 10% 20%;
+    --primary: 217 100% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 15% 18%;
     --secondary-foreground: 0 0% 95%;
-    --muted: 220 10% 20%;
-    --muted-foreground: 220 5% 65%;
-    --accent: 160 75% 45%;
-    --accent-foreground: 220 15% 8%;
+    --muted: 220 15% 18%;
+    --muted-foreground: 220 8% 65%;
+    --accent: 217 100% 60%;
+    --accent-foreground: 0 0% 100%;
     --border: 220 10% 20%;
     --input: 220 10% 20%;
     --ring: 200 85% 55%;
