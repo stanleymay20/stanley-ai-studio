@@ -182,6 +182,75 @@ export type Database = {
         }
         Relationships: []
       }
+      verse_settings: {
+        Row: {
+          created_at: string
+          enabled: boolean | null
+          id: string
+          mode: string | null
+          placement: string | null
+          show_reflection: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean | null
+          id?: string
+          mode?: string | null
+          placement?: string | null
+          show_reflection?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean | null
+          id?: string
+          mode?: string | null
+          placement?: string | null
+          show_reflection?: boolean | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      verses: {
+        Row: {
+          created_at: string
+          display_date: string | null
+          id: string
+          is_active: boolean | null
+          mode: string | null
+          reference: string
+          reflection: string | null
+          theme: string | null
+          updated_at: string
+          verse_text: string
+        }
+        Insert: {
+          created_at?: string
+          display_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          mode?: string | null
+          reference: string
+          reflection?: string | null
+          theme?: string | null
+          updated_at?: string
+          verse_text: string
+        }
+        Update: {
+          created_at?: string
+          display_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          mode?: string | null
+          reference?: string
+          reflection?: string | null
+          theme?: string | null
+          updated_at?: string
+          verse_text?: string
+        }
+        Relationships: []
+      }
       videos: {
         Row: {
           category: string | null
