@@ -44,14 +44,14 @@ export const VerseOfTheDay = ({ placement = 'homepage', className }: VerseOfTheD
 
           // Only fetch verse if enabled and placement matches
           if (settingsData.enabled && settingsData.placement === placement) {
-            const { data: verseData } = await supabase
+            const { data: verseData, error: verseError } = await supabase
               .from('verses')
               .select('verse_text, reference, reflection')
               .eq('is_active', true)
               .limit(1)
-              .single();
+              .maybeSingle(); // Use maybeSingle() to avoid 406 error when no active verse exists
 
-            if (verseData) {
+            if (!verseError && verseData) {
               setVerse(verseData);
             }
           }
