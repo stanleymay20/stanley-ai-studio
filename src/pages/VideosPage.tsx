@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import BackToTop from "@/components/BackToTop";
 
 interface Video {
   id: string;
@@ -57,7 +58,12 @@ const VideosPage = () => {
 
           <div className="mb-10">
             <h1 className="text-3xl font-bold text-foreground mb-2">Videos</h1>
-            <p className="text-muted-foreground">Talks, tutorials, and demonstrations of my work.</p>
+            <p className="text-muted-foreground">Talks, tutorials, and demos.</p>
+            {!loading && videos.length > 0 && (
+              <p className="text-sm text-muted-foreground mt-2">
+                Showing {videos.length} video{videos.length !== 1 ? 's' : ''}
+              </p>
+            )}
           </div>
 
           {loading ? (
@@ -80,9 +86,12 @@ const VideosPage = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {videos.map((video) => (
-                <div
+                <a
                   key={video.id}
-                  className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1"
+                  href={video.embed_url || '#'}
+                  target={video.embed_url ? "_blank" : undefined}
+                  rel="noopener noreferrer"
+                  className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1 cursor-pointer block"
                 >
                   <div className="aspect-video bg-gradient-to-br from-primary/20 via-accent/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
                     {video.thumbnail_url ? (
@@ -116,24 +125,12 @@ const VideosPage = () => {
                     </h3>
                     
                     {video.description && (
-                      <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">
+                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
                         {video.description}
                       </p>
                     )}
-                    
-                    {video.embed_url && (
-                      <a
-                        href={video.embed_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary text-sm font-medium hover:underline inline-flex items-center gap-1"
-                      >
-                        Watch Video
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                    )}
                   </div>
-                </div>
+                </a>
               ))}
             </div>
           )}
@@ -141,6 +138,7 @@ const VideosPage = () => {
       </main>
 
       <Footer />
+      <BackToTop />
     </div>
   );
 };

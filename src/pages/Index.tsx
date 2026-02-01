@@ -11,6 +11,7 @@ import FeaturedWork from "@/components/FeaturedWork";
 import { VerseOfTheDay } from "@/components/VerseOfTheDay";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import BackToTop from "@/components/BackToTop";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { Loader2 } from "lucide-react";
 
@@ -40,27 +41,33 @@ const Index = () => {
               <MembershipsSection />
             </div>
             
-            {/* Right Content */}
+            {/* Right Content - Ordered by recruiter signal strength */}
             <div className="lg:col-span-8 space-y-8 animate-slide-in-right">
-              {/* Recruiter Summary - Top priority visibility */}
+              {/* 1. Recruiter Summary - Top priority visibility */}
               <RecruiterSummary />
               
-              {/* Featured Work - Guides recruiters where to start */}
+              {/* 2. Featured Work - Guides recruiters where to start */}
               <FeaturedWork />
               
-              {/* Verse of the Day - Subtle, below the fold */}
-              <VerseOfTheDay placement="homepage" />
-              
+              {/* 3. Projects preview */}
               <ProjectsSection />
+              
+              {/* 4. Videos preview */}
+              <VideosSection />
+              
+              {/* 5. Courses & Books preview */}
               <CoursesSection />
               <BooksSection />
-              <VideosSection />
+              
+              {/* 6. Verse of the Day - Subtle, last position */}
+              <VerseOfTheDay placement="homepage" />
             </div>
           </div>
         </div>
       </main>
 
       <Footer />
+      <BackToTop />
     </div>
   );
 };

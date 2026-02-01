@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import BackToTop from "@/components/BackToTop";
 
 interface Course {
   id: string;
@@ -57,7 +58,12 @@ const CoursesPage = () => {
 
           <div className="mb-10">
             <h1 className="text-3xl font-bold text-foreground mb-2">Courses</h1>
-            <p className="text-muted-foreground">Educational content and courses I've created or contributed to.</p>
+            <p className="text-muted-foreground">Courses and educational content.</p>
+            {!loading && courses.length > 0 && (
+              <p className="text-sm text-muted-foreground mt-2">
+                Showing {courses.length} course{courses.length !== 1 ? 's' : ''}
+              </p>
+            )}
           </div>
 
           {loading ? (
@@ -80,9 +86,12 @@ const CoursesPage = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {courses.map((course) => (
-                <div
+                <a
                   key={course.id}
-                  className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1"
+                  href={course.external_link || '#'}
+                  target={course.external_link ? "_blank" : undefined}
+                  rel="noopener noreferrer"
+                  className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1 cursor-pointer block"
                 >
                   <div className="aspect-video bg-gradient-to-br from-primary/20 via-accent/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
                     {course.thumbnail_url ? (
@@ -107,24 +116,12 @@ const CoursesPage = () => {
                     </h3>
                     
                     {course.description && (
-                      <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">
+                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
                         {course.description}
                       </p>
                     )}
-                    
-                    {course.external_link && (
-                      <a
-                        href={course.external_link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary text-sm font-medium hover:underline inline-flex items-center gap-1"
-                      >
-                        View Course
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                    )}
                   </div>
-                </div>
+                </a>
               ))}
             </div>
           )}
@@ -132,6 +129,7 @@ const CoursesPage = () => {
       </main>
 
       <Footer />
+      <BackToTop />
     </div>
   );
 };

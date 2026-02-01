@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import BackToTop from "@/components/BackToTop";
 
 interface Project {
   id: string;
@@ -45,6 +46,8 @@ const ProjectsPage = () => {
     fetchProjects();
   }, []);
 
+  const featuredCount = projects.filter(p => p.featured).length;
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -62,7 +65,12 @@ const ProjectsPage = () => {
 
           <div className="mb-10">
             <h1 className="text-3xl font-bold text-foreground mb-2">Projects</h1>
-            <p className="text-muted-foreground">A collection of my work in data science, AI, and software development.</p>
+            <p className="text-muted-foreground">Selected projects in AI, data science, and software development.</p>
+            {!loading && projects.length > 0 && (
+              <p className="text-sm text-muted-foreground mt-2">
+                Showing {projects.length} project{projects.length !== 1 ? 's' : ''}{featuredCount > 0 ? ` · ${featuredCount} featured` : ''}
+              </p>
+            )}
           </div>
 
           {loading ? (
@@ -85,9 +93,12 @@ const ProjectsPage = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {projects.map((project) => (
-                <div
+                <a
                   key={project.id}
-                  className={`group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1 ${project.featured ? 'ring-2 ring-primary/20' : ''}`}
+                  href={project.external_link || project.github_link || '#'}
+                  target={project.external_link || project.github_link ? "_blank" : undefined}
+                  rel="noopener noreferrer"
+                  className={`group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1 cursor-pointer block ${project.featured ? 'ring-2 ring-primary/20' : ''}`}
                 >
                   <div className="h-48 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
                     {project.image_url ? (
@@ -145,37 +156,12 @@ const ProjectsPage = () => {
                     )}
                     
                     {project.description && (
-                      <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">
+                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
                         {project.description}
                       </p>
                     )}
-                    
-                    <div className="flex items-center gap-3">
-                      {project.external_link && (
-                        <a
-                          href={project.external_link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary text-sm font-medium hover:underline inline-flex items-center gap-1"
-                        >
-                          View Project
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      )}
-                      {project.github_link && (
-                        <a
-                          href={project.github_link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-muted-foreground text-sm font-medium hover:text-foreground inline-flex items-center gap-1"
-                        >
-                          <Github className="h-4 w-4" />
-                          Code
-                        </a>
-                      )}
-                    </div>
                   </div>
-                </div>
+                </a>
               ))}
             </div>
           )}
@@ -183,6 +169,7 @@ const ProjectsPage = () => {
       </main>
 
       <Footer />
+      <BackToTop />
     </div>
   );
 };

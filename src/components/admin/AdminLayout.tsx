@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAdmin } from '@/contexts/AdminContext';
 import { Button } from '@/components/ui/button';
@@ -41,6 +41,29 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
   const { logout } = useAdmin();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // Add noindex meta tag for admin pages - prevent search engine indexing
+  useEffect(() => {
+    const existingMeta = document.querySelector('meta[name="robots"]');
+    const metaContent = 'noindex, nofollow';
+    
+    if (existingMeta) {
+      existingMeta.setAttribute('content', metaContent);
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'robots';
+      meta.content = metaContent;
+      document.head.appendChild(meta);
+    }
+
+    // Cleanup: restore original meta on unmount
+    return () => {
+      const meta = document.querySelector('meta[name="robots"]');
+      if (meta) {
+        meta.setAttribute('content', 'index, follow');
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-muted/30">
