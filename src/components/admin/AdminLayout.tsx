@@ -2,6 +2,7 @@ import { ReactNode, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAdmin } from '@/contexts/AdminContext';
 import { Button } from '@/components/ui/button';
+import { FloatingAIHelp } from '@/components/admin/FloatingAIHelp';
 import { 
   LayoutDashboard, 
   User, 
@@ -13,7 +14,8 @@ import {
   Menu,
   X,
   ChevronRight,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Book
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -27,6 +29,7 @@ const navItems = [
   { path: '/admin/projects', label: 'Projects', icon: FolderOpen, description: 'Manage projects' },
   { path: '/admin/books', label: 'Books', icon: BookOpen, description: 'Book collection' },
   { path: '/admin/videos', label: 'Videos', icon: Video, description: 'Video content' },
+  { path: '/admin/verses', label: 'Daily Verse', icon: Book, description: 'Verse of the day' },
   { path: '/admin/media', label: 'Media Library', icon: ImageIcon, description: 'Upload images' },
 ];
 
@@ -163,6 +166,9 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           {children}
         </div>
       </main>
+
+      {/* Floating AI Help Button */}
+      <FloatingAIHelp />
     </div>
   );
 };

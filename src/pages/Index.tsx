@@ -5,6 +5,7 @@ import ProjectsSection from "@/components/ProjectsSection";
 import MembershipsSection from "@/components/MembershipsSection";
 import BooksSection from "@/components/BooksSection";
 import VideosSection from "@/components/VideosSection";
+import { VerseOfTheDay } from "@/components/VerseOfTheDay";
 
 const Index = () => {
   return (
@@ -20,7 +21,10 @@ const Index = () => {
           </div>
           
           {/* Right Content */}
-          <div className="lg:col-span-8 animate-slide-in-right">
+          <div className="lg:col-span-8 space-y-8 animate-slide-in-right">
+            {/* Verse of the Day - Homepage placement */}
+            <VerseOfTheDay placement="homepage" />
+            
             <ProjectsSection />
             <BooksSection />
             <VideosSection />

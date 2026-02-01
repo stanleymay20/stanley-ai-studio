@@ -1,26 +1,28 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FolderOpen, BookOpen, Video, User, ArrowRight, Plus, Sparkles, TrendingUp } from 'lucide-react';
+import { FolderOpen, BookOpen, Video, User, ArrowRight, Plus, Sparkles, TrendingUp, Book } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAdmin } from '@/contexts/AdminContext';
 
 const AdminDashboard = () => {
   const { adminSecret } = useAdmin();
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     projects: 0,
     books: 0,
     videos: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [profileName, setProfileName] = useState('Stanley');
 
   useEffect(() => {
     const fetchStats = async () => {
       if (!adminSecret) return;
 
       try {
-        const [projectsRes, booksRes, videosRes] = await Promise.all([
+        const [projectsRes, booksRes, videosRes, profileRes] = await Promise.all([
           supabase.functions.invoke('admin-data', { 
             body: { action: 'list', table: 'projects', secret: adminSecret } 
           }),
@@ -30,6 +32,9 @@ const AdminDashboard = () => {
           supabase.functions.invoke('admin-data', { 
             body: { action: 'list', table: 'videos', secret: adminSecret } 
           }),
+          supabase.functions.invoke('admin-data', { 
+            body: { action: 'list', table: 'profile', secret: adminSecret } 
+          }),
         ]);
 
         setStats({
@@ -37,6 +42,11 @@ const AdminDashboard = () => {
           books: booksRes.data?.data?.length || 0,
           videos: videosRes.data?.data?.length || 0,
         });
+
+        if (profileRes.data?.data?.[0]?.name) {
+          // Get first name only
+          setProfileName(profileRes.data.data[0].name.split(' ')[0]);
+        }
       } catch (error) {
         console.error('Error fetching stats:', error);
       } finally {
@@ -84,19 +94,25 @@ const AdminDashboard = () => {
     { label: 'Edit Profile', icon: User, path: '/admin/profile', color: 'bg-orange-500' },
   ];
 
+  // Get time-based greeting
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
+
   return (
     <div className="space-y-8">
-      {/* Welcome Header */}
+      {/* Personalized Welcome Header */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-accent/5 to-background p-8 border border-border">
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         <div className="relative">
-          <div className="flex items-center gap-2 text-primary mb-2">
-            <Sparkles className="h-5 w-5" />
-            <span className="text-sm font-medium">Welcome back</span>
-          </div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
-          <p className="text-muted-foreground max-w-lg">
-            Manage your portfolio content from here. Add projects, books, videos, and update your profile.
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            {getGreeting()}, {profileName} 👋
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            What would you like to update today?
           </p>
         </div>
       </div>
