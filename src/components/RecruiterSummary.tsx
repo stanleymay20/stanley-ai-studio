@@ -70,11 +70,11 @@ const RecruiterSummary = () => {
   return (
     <div className="bg-gradient-to-r from-card via-card to-primary/5 rounded-xl p-6 border border-border shadow-soft">
       {/* Role & Value Proposition */}
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold text-foreground mb-2">
+      <div className="mb-3">
+        <h2 className="text-2xl font-bold text-foreground mb-1">
           {profile.role_title || 'AI Engineer & Data Scientist'}
         </h2>
-        <p className="text-muted-foreground text-lg leading-relaxed">
+        <p className="text-muted-foreground leading-relaxed">
           {profile.value_proposition || (
             <>
               I build <span className="text-foreground font-medium">production-ready AI systems</span>, 

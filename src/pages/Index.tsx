@@ -42,7 +42,7 @@ const Index = () => {
             </div>
             
             {/* Right Content - Ordered by recruiter signal strength */}
-            <div className="lg:col-span-8 space-y-8 animate-slide-in-right">
+            <div className="lg:col-span-8 space-y-6 animate-slide-in-right">
               {/* 1. Recruiter Summary - Top priority visibility */}
               <RecruiterSummary />
               

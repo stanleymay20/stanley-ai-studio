@@ -73,12 +73,12 @@ const ProjectsSection = () => {
   }
 
   return (
-    <div className="mb-8">
-      <h2 className="text-lg font-semibold text-foreground mb-6 uppercase tracking-wide flex items-center gap-2">
+    <div className="mb-6">
+      <h2 className="text-lg font-semibold text-foreground mb-4 uppercase tracking-wide flex items-center gap-2">
         <span className="w-1 h-5 bg-primary rounded-full"></span>
         Projects
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {projects.map((project, index) => (
           <div
             key={project.id}
