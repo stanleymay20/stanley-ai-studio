@@ -1,22 +1,83 @@
+import { useEffect, useState } from "react";
 import { Briefcase } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
+
+interface CareerItem {
+  title: string;
+  company: string;
+  period: string;
+  description?: string;
+  current?: boolean;
+}
 
 const CareerSection = () => {
-  const experiences = [
-    {
-      title: "Co-founder",
-      company: "ScrollIntel",
-      description: "Enterprise AI Platform",
-      period: "2024–present",
-      current: true
-    },
-    {
-      title: "Student Assistant",
-      company: "GISMA Business School",
-      description: "",
-      period: "2022–2024",
-      current: false
-    }
-  ];
+  const [career, setCareer] = useState<CareerItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCareer = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('profile')
+          .select('career')
+          .limit(1)
+          .single();
+
+        if (error) throw error;
+        
+        const careerData = data?.career;
+        if (Array.isArray(careerData)) {
+          // Cast through unknown to safely access properties
+          const parsed = careerData
+            .filter((item) => typeof item === 'object' && item !== null)
+            .map((item, idx) => {
+              const obj = item as Record<string, unknown>;
+              const period = String(obj.period || '');
+              return {
+                title: String(obj.title || ''),
+                company: String(obj.company || ''),
+                period,
+                description: obj.description ? String(obj.description) : undefined,
+                current: idx === 0 && period.toLowerCase().includes('present')
+              };
+            });
+          setCareer(parsed);
+        }
+      } catch (error) {
+        console.error('Error fetching career:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCareer();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-card rounded-lg p-6 mb-6 border border-border">
+        <Skeleton className="h-5 w-32 mb-4" />
+        <div className="space-y-4">
+          {[1, 2].map((i) => (
+            <div key={i} className="profile-card p-4">
+              <div className="flex items-start gap-4">
+                <Skeleton className="w-9 h-9 rounded-lg" />
+                <div className="flex-1">
+                  <Skeleton className="h-4 w-48 mb-2" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (career.length === 0) {
+    return null;
+  }
 
   return (
     <div className="bg-card rounded-lg p-6 mb-6 border border-border hover:shadow-medium transition-all duration-300">
@@ -25,10 +86,10 @@ const CareerSection = () => {
         Professional Career
       </h2>
       <div className="space-y-4">
-        {experiences.map((exp, index) => (
+        {career.map((exp, index) => (
           <div key={index} className="profile-card p-4 group">
             <div className="flex items-start gap-4">
-              <div className="p-2 bg-gradient-to-br from-primary/20 to-accent/10 rounded-lg group-hover:scale-110 transition-transform duration-300">
+              <div className="p-2 bg-gradient-to-br from-primary/20 to-accent/10 rounded-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                 <Briefcase className="h-5 w-5 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
