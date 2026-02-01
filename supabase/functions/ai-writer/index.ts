@@ -5,13 +5,105 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+// Rate limiting: simple in-memory store (resets on function cold start)
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT = 20; // requests per window
+const RATE_WINDOW = 60 * 1000; // 1 minute
+
+function isRateLimited(identifier: string): boolean {
+  const now = Date.now();
+  const record = rateLimitStore.get(identifier);
+  
+  if (!record || now > record.resetTime) {
+    rateLimitStore.set(identifier, { count: 1, resetTime: now + RATE_WINDOW });
+    return false;
+  }
+  
+  if (record.count >= RATE_LIMIT) {
+    return true;
+  }
+  
+  record.count++;
+  return false;
+}
+
+// Input validation
+function validateInput(body: any): { valid: boolean; error?: string } {
+  if (!body || typeof body !== 'object') {
+    return { valid: false, error: 'Invalid request body' };
+  }
+  
+  const { action, content, secret } = body;
+  
+  if (!secret || typeof secret !== 'string') {
+    return { valid: false, error: 'Admin authentication required' };
+  }
+  
+  if (!action || typeof action !== 'string') {
+    return { valid: false, error: 'Action is required' };
+  }
+  
+  if (!content || typeof content !== 'string') {
+    return { valid: false, error: 'Content is required' };
+  }
+  
+  // Prevent excessively long inputs (potential abuse)
+  if (content.length > 10000) {
+    return { valid: false, error: 'Content too long (max 10000 characters)' };
+  }
+  
+  // Validate action is a known type
+  const validActions = [
+    'write_description', 'improve', 'professional', 'shorten', 'seo_summary',
+    'write_bio', 'recruiter_language', 'ats_optimize', 'add_impact',
+    'one_liner', 'interview_points', 'value_proposition', 'resume_bullets'
+  ];
+  
+  if (!validActions.includes(action)) {
+    return { valid: false, error: 'Invalid action' };
+  }
+  
+  return { valid: true };
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { action, content, context } = await req.json();
+    const body = await req.json();
+    
+    // Input validation
+    const validation = validateInput(body);
+    if (!validation.valid) {
+      console.error('AI Writer validation failed:', validation.error);
+      return new Response(
+        JSON.stringify({ error: validation.error }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const { action, content, context, secret } = body;
+    
+    // Admin authentication check
+    const adminSecret = Deno.env.get('ADMIN_SECRET');
+    if (!adminSecret || secret !== adminSecret) {
+      console.error('AI Writer: Unauthorized access attempt');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    // Rate limiting by action type
+    if (isRateLimited(`ai-writer-${action}`)) {
+      console.warn('AI Writer: Rate limit exceeded');
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Please wait a moment.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -60,7 +152,6 @@ Use third person unless specified. Keep it engaging but professional.`;
         userPrompt = `Write a professional bio based on this information:\n${content}`;
         break;
 
-      // NEW: Recruiter-focused actions
       case 'recruiter_language':
         systemPrompt = `You are a recruiter who reads hundreds of resumes daily. Rewrite content to immediately grab a recruiter's attention.
 Use the Problem → Solution → Outcome format. Lead with impact. Use active verbs. Be specific about achievements.
@@ -122,7 +213,7 @@ ${context?.techStack ? `Tech stack: ${context.techStack}` : ''}`;
         userPrompt = content;
     }
 
-    console.log(`AI Writer: Processing ${action} request`);
+    console.log(`AI Writer: Processing ${action} request (admin authenticated)`);
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -154,8 +245,7 @@ ${context?.techStack ? `Tech stack: ${context.techStack}` : ''}`;
           { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      const errorText = await response.text();
-      console.error('AI gateway error:', response.status, errorText);
+      console.error('AI gateway error:', response.status);
       throw new Error('AI service unavailable');
     }
 
@@ -170,9 +260,9 @@ ${context?.techStack ? `Tech stack: ${context.techStack}` : ''}`;
     );
 
   } catch (error) {
-    console.error('AI Writer error:', error);
+    console.error('AI Writer error:', error instanceof Error ? error.message : 'Unknown error');
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
+      JSON.stringify({ error: 'Service temporarily unavailable' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

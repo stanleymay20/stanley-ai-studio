@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAdmin } from '@/contexts/AdminContext';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { Upload, X, Loader2, Image as ImageIcon, Sparkles, RefreshCw } from 'lucide-react';
@@ -44,6 +45,7 @@ export const ThumbnailUploader = ({
   const [dragActive, setDragActive] = useState(false);
   const [selectedStyle, setSelectedStyle] = useState('professional');
   const [showStyleSelector, setShowStyleSelector] = useState(false);
+  const { adminSecret } = useAdmin();
 
   const aspectClass = aspectRatioByType[contentType];
 
@@ -84,7 +86,7 @@ export const ThumbnailUploader = ({
       onChange(publicUrl);
       toast({ title: 'Image uploaded', description: 'Your thumbnail is ready' });
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error('Upload error');
       toast({
         title: 'Upload failed',
         description: 'Could not upload image. Please try again.',
@@ -105,6 +107,15 @@ export const ThumbnailUploader = ({
       return;
     }
 
+    if (!adminSecret) {
+      toast({
+        title: 'Not authenticated',
+        description: 'Please log in to admin panel first',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke('ai-image', {
@@ -113,6 +124,7 @@ export const ThumbnailUploader = ({
           category,
           style: selectedStyle,
           type: contentType,
+          secret: adminSecret,
         }
       });
 
@@ -126,7 +138,7 @@ export const ThumbnailUploader = ({
       toast({ title: 'Thumbnail generated', description: 'AI thumbnail is ready to use' });
       setShowStyleSelector(false);
     } catch (error) {
-      console.error('AI generation error:', error);
+      console.error('AI generation error');
       toast({
         title: 'Generation failed',
         description: error instanceof Error ? error.message : 'Could not generate thumbnail',

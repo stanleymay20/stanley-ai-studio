@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAdmin } from '@/contexts/AdminContext';
 import { toast } from '@/hooks/use-toast';
 
 type AIAction = 
@@ -25,12 +26,22 @@ interface AIContext {
 
 export function useAIWriter() {
   const [loading, setLoading] = useState(false);
+  const { adminSecret } = useAdmin();
 
   const generateText = async (
     action: AIAction,
     content: string,
     context?: AIContext
   ): Promise<string | null> => {
+    if (!adminSecret) {
+      toast({
+        title: 'Not authenticated',
+        description: 'Please log in to admin panel first',
+        variant: 'destructive',
+      });
+      return null;
+    }
+
     if (!content.trim()) {
       toast({
         title: 'Missing input',
@@ -43,14 +54,14 @@ export function useAIWriter() {
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('ai-writer', {
-        body: { action, content, context }
+        body: { action, content, context, secret: adminSecret }
       });
 
       if (error) throw error;
       
       if (data.error) {
         toast({
-          title: 'AI Error',
+          title: 'Error',
           description: data.error,
           variant: 'destructive',
         });
@@ -80,7 +91,7 @@ export function useAIWriter() {
 
       return data.text;
     } catch (error) {
-      console.error('AI Writer error:', error);
+      console.error('AI Writer error');
       toast({
         title: 'Error',
         description: 'Failed to generate text. Please try again.',
