@@ -63,7 +63,7 @@ const VideosSection = () => {
   return (
     <div className="mb-8 animate-fade-in">
       <h2 className="text-lg font-semibold text-foreground mb-6 uppercase tracking-wide flex items-center gap-2">
-        <Play className="h-5 w-5 text-primary" />
+        <span className="w-1 h-5 bg-primary rounded-full"></span>
         Videos
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
