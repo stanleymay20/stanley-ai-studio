@@ -88,16 +88,16 @@
   
   /* Card components */
   .profile-card {
-    @apply bg-card border border-border rounded-lg shadow-soft hover:shadow-medium transition-all duration-200;
+    @apply bg-card border border-border rounded-lg shadow-soft hover:shadow-medium transition-all duration-300;
   }
   
   .project-card {
-    @apply bg-card border border-border rounded-lg p-6 hover:shadow-medium transition-all duration-200 hover:-translate-y-1;
+    @apply bg-card border border-border rounded-lg p-6 hover:shadow-medium transition-all duration-300 hover:-translate-y-1;
   }
   
   /* Button styles */
   .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-md font-medium transition-colors duration-200;
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-md font-medium transition-all duration-200 hover:shadow-medium;
   }
   
   .btn-outline {
@@ -128,5 +128,51 @@
   /* Professional badge */
   .professional-badge {
     @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-secondary text-secondary-foreground border border-border;
+  }
+  
+  /* Hover scale effect */
+  .hover-scale {
+    @apply transition-transform duration-300 hover:scale-105;
+  }
+  
+  /* Underline animation for links */
+  .link-underline {
+    @apply relative inline-block;
+  }
+  
+  .link-underline::after {
+    content: '';
+    @apply absolute w-full h-0.5 bottom-0 left-0 bg-primary origin-bottom-right transition-transform duration-300 scale-x-0;
+  }
+  
+  .link-underline:hover::after {
+    @apply origin-bottom-left scale-x-100;
+  }
+  
+  /* Glass effect */
+  .glass-effect {
+    @apply bg-card/80 backdrop-blur-sm border border-border/50;
+  }
+  
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+  
+  /* Animation delays */
+  .animate-delay-100 {
+    animation-delay: 100ms;
+  }
+  .animate-delay-200 {
+    animation-delay: 200ms;
+  }
+  .animate-delay-300 {
+    animation-delay: 300ms;
+  }
+  .animate-delay-400 {
+    animation-delay: 400ms;
+  }
+  .animate-delay-500 {
+    animation-delay: 500ms;
   }
 }
