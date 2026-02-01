@@ -12,7 +12,8 @@ import {
   Home,
   Menu,
   X,
-  ChevronRight
+  ChevronRight,
+  Image as ImageIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -26,6 +27,7 @@ const navItems = [
   { path: '/admin/projects', label: 'Projects', icon: FolderOpen, description: 'Manage projects' },
   { path: '/admin/books', label: 'Books', icon: BookOpen, description: 'Book collection' },
   { path: '/admin/videos', label: 'Videos', icon: Video, description: 'Video content' },
+  { path: '/admin/media', label: 'Media Library', icon: ImageIcon, description: 'Upload images' },
 ];
 
 const AdminLayout = ({ children }: AdminLayoutProps) => {
