@@ -8,7 +8,9 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useAdminData } from '@/hooks/useAdminData';
-import { Loader2, Plus, Pencil, Trash2, ExternalLink, Github, Sparkles, Eye, EyeOff, GripVertical } from 'lucide-react';
+import { ImageUploader } from '@/components/admin/ImageUploader';
+import { AIWriterButtons } from '@/components/admin/AIWriterButtons';
+import { Loader2, Plus, Pencil, Trash2, ExternalLink, Github, Sparkles, Eye, EyeOff, GripVertical, FolderOpen } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
 
 type Project = Tables<'projects'>;
@@ -26,6 +28,8 @@ const emptyProject: Partial<Project> = {
   published: true,
   sort_order: 0,
 };
+
+const categoryOptions = ['AI', 'Data Science', 'Machine Learning', 'Research', 'Platform', 'Web App', 'Mobile'];
 
 const AdminProjects = () => {
   const { data, loading, fetchData, createItem, updateItem, deleteItem } = useAdminData<Project>('projects');
@@ -84,10 +88,6 @@ const AdminProjects = () => {
     await updateItem(project.id, { published: !project.published });
   };
 
-  const toggleFeatured = async (project: Project) => {
-    await updateItem(project.id, { featured: !project.featured });
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -120,7 +120,19 @@ const AdminProjects = () => {
               </DialogTitle>
             </DialogHeader>
             {editingProject && (
-              <div className="grid gap-4 py-4">
+              <div className="grid gap-6 py-4">
+                {/* Project Image */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Project Image</Label>
+                  <ImageUploader
+                    value={editingProject.image_url}
+                    onChange={(url) => handleChange('image_url', url)}
+                    folder="projects"
+                    aspectRatio="video"
+                  />
+                </div>
+
+                {/* Title */}
                 <div className="grid gap-2">
                   <Label htmlFor="title" className="text-sm font-medium">Title *</Label>
                   <Input
@@ -128,30 +140,44 @@ const AdminProjects = () => {
                     value={editingProject.title || ''}
                     onChange={(e) => handleChange('title', e.target.value)}
                     placeholder="My Awesome Project"
-                    className="h-10"
                   />
                 </div>
+
+                {/* Subtitle */}
                 <div className="grid gap-2">
-                  <Label htmlFor="subtitle" className="text-sm font-medium">Subtitle</Label>
+                  <Label htmlFor="subtitle" className="text-sm font-medium">Tagline</Label>
                   <Input
                     id="subtitle"
                     value={editingProject.subtitle || ''}
                     onChange={(e) => handleChange('subtitle', e.target.value)}
-                    placeholder="A brief tagline"
-                    className="h-10"
+                    placeholder="A brief tagline for your project"
                   />
                 </div>
+
+                {/* Description with AI */}
                 <div className="grid gap-2">
-                  <Label htmlFor="description" className="text-sm font-medium">Description</Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="description" className="text-sm font-medium">Description</Label>
+                    <AIWriterButtons
+                      content={editingProject.description || editingProject.title || ''}
+                      onResult={(text) => handleChange('description', text)}
+                      context={{
+                        type: 'project',
+                        techStack: techStackInput,
+                        category: editingProject.category || undefined,
+                      }}
+                    />
+                  </div>
                   <Textarea
                     id="description"
                     value={editingProject.description || ''}
                     onChange={(e) => handleChange('description', e.target.value)}
-                    placeholder="Describe your project..."
+                    placeholder="Describe what this project does and why it matters..."
                     rows={4}
-                    className="resize-none"
                   />
                 </div>
+
+                {/* Category & Tech Stack */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="category" className="text-sm font-medium">Category</Label>
@@ -160,59 +186,44 @@ const AdminProjects = () => {
                       value={editingProject.category || ''}
                       onChange={(e) => handleChange('category', e.target.value)}
                       placeholder="AI, Data Science..."
-                      className="h-10"
+                      list="category-options"
                     />
+                    <datalist id="category-options">
+                      {categoryOptions.map((cat) => (
+                        <option key={cat} value={cat} />
+                      ))}
+                    </datalist>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="sort_order" className="text-sm font-medium">Sort Order</Label>
+                    <Label htmlFor="tech_stack" className="text-sm font-medium">Tech Stack</Label>
                     <Input
-                      id="sort_order"
-                      type="number"
-                      value={editingProject.sort_order || 0}
-                      onChange={(e) => handleChange('sort_order', parseInt(e.target.value))}
-                      className="h-10"
+                      id="tech_stack"
+                      value={techStackInput}
+                      onChange={(e) => setTechStackInput(e.target.value)}
+                      placeholder="Python, React, TensorFlow"
                     />
+                    <p className="text-xs text-muted-foreground">Separate with commas</p>
                   </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="tech_stack" className="text-sm font-medium">Tech Stack</Label>
-                  <Input
-                    id="tech_stack"
-                    value={techStackInput}
-                    onChange={(e) => setTechStackInput(e.target.value)}
-                    placeholder="Python, React, TensorFlow (comma-separated)"
-                    className="h-10"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="image_url" className="text-sm font-medium">Image URL</Label>
-                  <Input
-                    id="image_url"
-                    value={editingProject.image_url || ''}
-                    onChange={(e) => handleChange('image_url', e.target.value)}
-                    placeholder="https://..."
-                    className="h-10"
-                  />
-                </div>
+
+                {/* Links */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="external_link" className="text-sm font-medium">External Link</Label>
+                    <Label htmlFor="external_link" className="text-sm font-medium">Live Demo / Website</Label>
                     <Input
                       id="external_link"
                       value={editingProject.external_link || ''}
                       onChange={(e) => handleChange('external_link', e.target.value)}
                       placeholder="https://..."
-                      className="h-10"
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="github_link" className="text-sm font-medium">GitHub Link</Label>
+                    <Label htmlFor="github_link" className="text-sm font-medium">GitHub</Label>
                     <Input
                       id="github_link"
                       value={editingProject.github_link || ''}
                       onChange={(e) => handleChange('github_link', e.target.value)}
                       placeholder="https://github.com/..."
-                      className="h-10"
                     />
                   </div>
                 </div>
@@ -226,7 +237,7 @@ const AdminProjects = () => {
                       onCheckedChange={(checked) => handleChange('featured', checked)}
                     />
                     <Label htmlFor="featured" className="text-sm cursor-pointer">
-                      <Sparkles className="h-4 w-4 inline mr-1" />
+                      <Sparkles className="h-4 w-4 inline mr-1 text-amber-500" />
                       Featured
                     </Label>
                   </div>
@@ -237,7 +248,7 @@ const AdminProjects = () => {
                       onCheckedChange={(checked) => handleChange('published', checked)}
                     />
                     <Label htmlFor="published" className="text-sm cursor-pointer">
-                      <Eye className="h-4 w-4 inline mr-1" />
+                      <Eye className="h-4 w-4 inline mr-1 text-green-500" />
                       Published
                     </Label>
                   </div>
@@ -245,7 +256,7 @@ const AdminProjects = () => {
 
                 <Button onClick={handleSave} disabled={saving} className="mt-2">
                   {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                  {editingProject.id ? 'Update Project' : 'Create Project'}
+                  {editingProject.id ? 'Save Changes' : 'Create Project'}
                 </Button>
               </div>
             )}
@@ -259,9 +270,15 @@ const AdminProjects = () => {
           <Card key={project.id} className="border-border/50 hover:shadow-soft transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-start gap-4">
-                {/* Drag Handle (visual only) */}
-                <div className="pt-1 text-muted-foreground/30">
-                  <GripVertical className="h-5 w-5" />
+                {/* Image Preview */}
+                <div className="w-20 h-14 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+                  {project.image_url ? (
+                    <img src={project.image_url} alt={project.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <FolderOpen className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                  )}
                 </div>
 
                 {/* Content */}
@@ -269,7 +286,7 @@ const AdminProjects = () => {
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="font-semibold text-foreground truncate">{project.title}</h3>
                     {project.featured && (
-                      <Badge variant="default" className="bg-primary/10 text-primary border-primary/20 text-xs">
+                      <Badge variant="default" className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-xs">
                         <Sparkles className="h-3 w-3 mr-1" />
                         Featured
                       </Badge>
@@ -285,14 +302,14 @@ const AdminProjects = () => {
                     </Badge>
                   </div>
                   {project.subtitle && (
-                    <p className="text-sm text-muted-foreground mb-2">{project.subtitle}</p>
+                    <p className="text-sm text-muted-foreground mb-2 line-clamp-1">{project.subtitle}</p>
                   )}
                   <div className="flex items-center gap-2 flex-wrap">
                     <Badge variant="outline" className="text-xs font-normal">
                       {project.category}
                     </Badge>
                     {project.tech_stack?.slice(0, 3).map((tech) => (
-                      <span key={tech} className="text-xs text-muted-foreground">
+                      <span key={tech} className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
                         {tech}
                       </span>
                     ))}
