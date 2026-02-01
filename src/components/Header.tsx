@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Moon, Sun, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoImage from "@/assets/logo.png";
@@ -6,6 +7,7 @@ import logoImage from "@/assets/logo.png";
 const Header = () => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
@@ -23,27 +25,27 @@ const Header = () => {
     document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-      setIsMenuOpen(false);
-    }
-  };
-
   const navItems = [
-    { label: "Home", id: "home" },
-    { label: "Projects", id: "projects" },
-    { label: "About", id: "about" },
-    { label: "Contact", id: "contact" },
+    { label: "Home", href: "/" },
+    { label: "Projects", href: "/projects" },
+    { label: "Videos", href: "/videos" },
+    { label: "Courses", href: "/courses" },
+    { label: "Books", href: "/books" },
   ];
+
+  const isActive = (href: string) => {
+    if (href === "/") {
+      return location.pathname === "/";
+    }
+    return location.pathname.startsWith(href);
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-card border-b">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-3">
             <img 
               src={logoImage} 
               alt="Stanley Osei-Wusu" 
@@ -52,18 +54,22 @@ const Header = () => {
             <span className="text-lg font-semibold text-foreground hidden sm:block">
               Stanley Osei-Wusu
             </span>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => scrollToSection(item.id)}
-                className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
+              <Link
+                key={item.href}
+                to={item.href}
+                className={`transition-colors duration-200 font-medium ${
+                  isActive(item.href)
+                    ? "text-primary"
+                    : "text-foreground hover:text-primary"
+                }`}
               >
                 {item.label}
-              </button>
+              </Link>
             ))}
           </nav>
 
@@ -101,16 +107,21 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <nav className="md:hidden pb-4 animate-fade-in-up">
+          <nav className="md:hidden pb-4 animate-fade-in">
             <div className="flex flex-col space-y-4">
               {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className="text-left text-foreground hover:text-primary transition-colors duration-200 font-medium py-2"
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`text-left transition-colors duration-200 font-medium py-2 ${
+                    isActive(item.href)
+                      ? "text-primary"
+                      : "text-foreground hover:text-primary"
+                  }`}
                 >
                   {item.label}
-                </button>
+                </Link>
               ))}
             </div>
           </nav>

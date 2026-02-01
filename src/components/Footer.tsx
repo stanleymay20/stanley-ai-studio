@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Github, Linkedin, Mail, Twitter, ExternalLink } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
@@ -33,20 +34,12 @@ const Footer = () => {
     }
   ].filter(Boolean) as { name: string; url: string; icon: any; description: string }[];
 
-  const quickLinks = settings?.footer_quick_links || [
-    { label: "Projects", href: "#projects" },
-    { label: "About", href: "#about" },
-    { label: "Blog", href: "#blog" },
-    { label: "Contact", href: "#contact" }
+  const quickLinks = [
+    { label: "Projects", href: "/projects" },
+    { label: "Videos", href: "/videos" },
+    { label: "Courses", href: "/courses" },
+    { label: "Books", href: "/books" }
   ];
-
-  const scrollToSection = (id: string) => {
-    const sectionId = id.replace('#', '');
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   const tagline = settings?.footer_tagline || 
     "Data Scientist & AI Engineer passionate about building intelligent systems that solve real-world problems. Always open to new opportunities and collaborations.";
@@ -78,12 +71,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.label}>
-                  <button
-                    onClick={() => scrollToSection(link.href)}
+                  <Link
+                    to={link.href}
                     className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
                   >
                     {link.label}
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>
