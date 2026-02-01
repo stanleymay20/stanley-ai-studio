@@ -60,6 +60,63 @@ Use third person unless specified. Keep it engaging but professional.`;
         userPrompt = `Write a professional bio based on this information:\n${content}`;
         break;
 
+      // NEW: Recruiter-focused actions
+      case 'recruiter_language':
+        systemPrompt = `You are a recruiter who reads hundreds of resumes daily. Rewrite content to immediately grab a recruiter's attention.
+Use the Problem → Solution → Outcome format. Lead with impact. Use active verbs. Be specific about achievements.
+Keep it scannable - recruiters spend 6-15 seconds on first pass.`;
+        userPrompt = `Rewrite this project description in recruiter-friendly language:\n\n"${content}"
+${context?.techStack ? `Tech stack: ${context.techStack}` : ''}`;
+        break;
+
+      case 'ats_optimize':
+        systemPrompt = `You are an ATS (Applicant Tracking System) optimization expert. Enhance content to match keywords that recruiters search for.
+Include industry-standard terminology. Use exact skill names (e.g., "Python" not "programming"). 
+Make the content keyword-rich but natural-sounding.`;
+        userPrompt = `Optimize this for ATS systems and recruiter keyword searches:\n\n"${content}"
+${context?.category ? `Field: ${context.category}` : ''}`;
+        break;
+
+      case 'add_impact':
+        systemPrompt = `You are a metrics-focused resume writer. Add measurable impact statements to descriptions.
+If no specific numbers are provided, suggest realistic placeholder metrics (XX%, X hours saved, etc).
+Focus on: time saved, efficiency improved, revenue impact, scale achieved, problems solved.`;
+        userPrompt = `Add measurable impact to this description:\n\n"${content}"`;
+        break;
+
+      case 'one_liner':
+        systemPrompt = `You are a headline writer for tech portfolios. Create punchy, impactful one-line summaries.
+Format: [Action verb] + [what you built] + [measurable result].
+Example: "Built NLP pipeline reducing review time by 60%"`;
+        userPrompt = `Create a powerful one-line summary for:\n\n"${content}"`;
+        break;
+
+      case 'interview_points':
+        systemPrompt = `You are an interview coach. Generate 3-4 talking points for discussing this project in interviews.
+Format each point as: 
+- Challenge faced
+- Technical decision made  
+- Result achieved
+Keep points concise and story-ready.`;
+        userPrompt = `Generate interview talking points for this project:\n\n"${content}"
+${context?.techStack ? `Tech used: ${context.techStack}` : ''}`;
+        break;
+
+      case 'value_proposition':
+        systemPrompt = `You are a personal branding expert. Write a compelling value proposition for a tech professional.
+Keep it to 1-2 sentences. Focus on: what you do + who you help + unique value you bring.
+Make it memorable and recruiter-ready.`;
+        userPrompt = `Write a value proposition based on:\n\n"${content}"`;
+        break;
+
+      case 'resume_bullets':
+        systemPrompt = `You are a resume bullet point expert. Generate 3-5 strong resume bullet points.
+Each bullet should: start with a power verb, include metrics when possible, highlight technical skills.
+Format: • [Power verb] [what you did] [impact/result]`;
+        userPrompt = `Generate resume bullet points for:\n\n"${content}"
+${context?.techStack ? `Tech stack: ${context.techStack}` : ''}`;
+        break;
+
       default:
         systemPrompt = `You are a helpful writing assistant for a professional portfolio website.`;
         userPrompt = content;

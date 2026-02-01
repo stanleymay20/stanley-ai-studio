@@ -81,6 +81,7 @@ export type Database = {
         Row: {
           bio: string | null
           career: Json | null
+          core_skills: string[] | null
           created_at: string
           education: Json | null
           email: string | null
@@ -91,13 +92,17 @@ export type Database = {
           memberships: Json | null
           name: string
           photo_url: string | null
+          resume_url: string | null
+          role_title: string | null
           skills: Json | null
           title: string
           updated_at: string
+          value_proposition: string | null
         }
         Insert: {
           bio?: string | null
           career?: Json | null
+          core_skills?: string[] | null
           created_at?: string
           education?: Json | null
           email?: string | null
@@ -108,13 +113,17 @@ export type Database = {
           memberships?: Json | null
           name?: string
           photo_url?: string | null
+          resume_url?: string | null
+          role_title?: string | null
           skills?: Json | null
           title?: string
           updated_at?: string
+          value_proposition?: string | null
         }
         Update: {
           bio?: string | null
           career?: Json | null
+          core_skills?: string[] | null
           created_at?: string
           education?: Json | null
           email?: string | null
@@ -125,9 +134,12 @@ export type Database = {
           memberships?: Json | null
           name?: string
           photo_url?: string | null
+          resume_url?: string | null
+          role_title?: string | null
           skills?: Json | null
           title?: string
           updated_at?: string
+          value_proposition?: string | null
         }
         Relationships: []
       }

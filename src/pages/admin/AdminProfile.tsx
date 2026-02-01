@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useEffect, useState, useCallback } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,7 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAdminData } from '@/hooks/useAdminData';
 import { ImageUploader } from '@/components/admin/ImageUploader';
 import { AIWriterButtons } from '@/components/admin/AIWriterButtons';
-import { Loader2, Save, Plus, Trash2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
+import { Loader2, Save, Plus, Trash2, Briefcase, FileText, Upload, Download, X } from 'lucide-react';
 
 interface EducationItem {
   degree: string;
@@ -37,12 +39,18 @@ interface Profile {
   skills: string[];
   languages: { language: string; level: string }[];
   memberships: { organization: string; role: string }[];
+  // Recruiter fields
+  role_title: string | null;
+  value_proposition: string | null;
+  core_skills: string[] | null;
+  resume_url: string | null;
 }
 
 const AdminProfile = () => {
   const { data, loading, fetchData, updateItem } = useAdminData<Profile>('profile');
   const [profile, setProfile] = useState<Profile | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploadingResume, setUploadingResume] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -66,6 +74,44 @@ const AdminProfile = () => {
     await updateItem(profile.id, profile);
     setSaving(false);
   };
+
+  // Resume upload handler
+  const handleResumeUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      toast({ title: 'Invalid file', description: 'Please upload a PDF file', variant: 'destructive' });
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: 'File too large', description: 'Please upload a file under 10MB', variant: 'destructive' });
+      return;
+    }
+
+    setUploadingResume(true);
+    try {
+      const fileName = `resume/${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+      const { error: uploadError } = await supabase.storage
+        .from('portfolio-assets')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('portfolio-assets')
+        .getPublicUrl(fileName);
+
+      handleChange('resume_url', publicUrl);
+      toast({ title: 'Resume uploaded', description: 'Your resume is ready for download' });
+    } catch (error) {
+      console.error('Resume upload error:', error);
+      toast({ title: 'Upload failed', description: 'Could not upload resume', variant: 'destructive' });
+    } finally {
+      setUploadingResume(false);
+    }
+  }, []);
 
   // Education helpers
   const addEducation = () => {
@@ -133,6 +179,118 @@ const AdminProfile = () => {
       </div>
 
       <div className="grid gap-6">
+        {/* RECRUITER SUMMARY - TOP PRIORITY */}
+        <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Briefcase className="h-5 w-5 text-primary" />
+              Recruiter Summary
+            </CardTitle>
+            <CardDescription>
+              This appears at the top of your homepage. Optimize it for recruiters scanning your profile.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Role Title */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="role_title">Role Title</Label>
+                <AIWriterButtons
+                  content={profile.role_title || profile.title || ''}
+                  onResult={(text) => handleChange('role_title', text)}
+                  context={{ type: 'role_title' }}
+                  variant="recruiter"
+                />
+              </div>
+              <Input
+                id="role_title"
+                value={profile.role_title || ''}
+                onChange={(e) => handleChange('role_title', e.target.value)}
+                placeholder="AI Engineer & Data Scientist"
+              />
+              <p className="text-xs text-muted-foreground">Recruiter-facing headline (e.g., "AI Engineer & Data Scientist")</p>
+            </div>
+
+            {/* Value Proposition */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="value_proposition">Value Proposition</Label>
+                <AIWriterButtons
+                  content={profile.value_proposition || profile.bio || ''}
+                  onResult={(text) => handleChange('value_proposition', text)}
+                  context={{ type: 'value_proposition' }}
+                  variant="recruiter"
+                />
+              </div>
+              <Textarea
+                id="value_proposition"
+                value={profile.value_proposition || ''}
+                onChange={(e) => handleChange('value_proposition', e.target.value)}
+                placeholder="I build production-ready AI systems, data pipelines, and automation tools that deliver measurable business impact."
+                rows={2}
+              />
+              <p className="text-xs text-muted-foreground">1-2 sentences that answer "What do you do and why should I care?"</p>
+            </div>
+
+            {/* Core Skills (ATS Keywords) */}
+            <div className="space-y-2">
+              <Label htmlFor="core_skills">Core Skills (ATS Keywords)</Label>
+              <Input
+                id="core_skills"
+                value={(profile.core_skills || []).join(', ')}
+                onChange={(e) => handleChange('core_skills', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                placeholder="Python, Machine Learning, NLP, SQL, Cloud (AWS/GCP), APIs, TensorFlow"
+              />
+              <p className="text-xs text-muted-foreground">Comma-separated. Use exact tech names for ATS matching.</p>
+            </div>
+
+            {/* Resume Upload */}
+            <div className="space-y-2">
+              <Label>Resume (PDF)</Label>
+              <div className="flex items-center gap-3">
+                {profile.resume_url ? (
+                  <div className="flex items-center gap-2 flex-1 p-3 bg-muted/50 rounded-lg border border-border">
+                    <FileText className="h-5 w-5 text-primary" />
+                    <span className="text-sm font-medium flex-1 truncate">Resume uploaded</span>
+                    <a href={profile.resume_url} target="_blank" rel="noopener noreferrer">
+                      <Button size="sm" variant="outline" className="gap-1">
+                        <Download className="h-3 w-3" />
+                        View
+                      </Button>
+                    </a>
+                    <Button 
+                      size="sm" 
+                      variant="ghost"
+                      onClick={() => handleChange('resume_url', null)}
+                    >
+                      <X className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                ) : (
+                  <label className="flex-1 flex items-center justify-center gap-2 p-4 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 hover:bg-muted/30 transition-colors">
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="application/pdf"
+                      onChange={handleResumeUpload}
+                      disabled={uploadingResume}
+                    />
+                    {uploadingResume ? (
+                      <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                    ) : (
+                      <Upload className="h-5 w-5 text-muted-foreground" />
+                    )}
+                    <span className="text-sm text-muted-foreground">
+                      {uploadingResume ? 'Uploading...' : 'Upload PDF resume'}
+                    </span>
+                  </label>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">Recruiters expect a downloadable resume. PDF format, max 10MB.</p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Profile Photo & Basic Info */}
         <Card>
           <CardHeader>
