@@ -29,7 +29,7 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const validTables = ['profile', 'projects', 'books', 'videos', 'verses', 'verse_settings', 'site_settings'];
+    const validTables = ['profile', 'projects', 'books', 'videos', 'verses', 'verse_settings', 'site_settings', 'courses'];
     if (!validTables.includes(table)) {
       return new Response(
         JSON.stringify({ error: 'Invalid table' }),

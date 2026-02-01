@@ -4,6 +4,7 @@ import CareerSection from "@/components/CareerSection";
 import ProjectsSection from "@/components/ProjectsSection";
 import MembershipsSection from "@/components/MembershipsSection";
 import BooksSection from "@/components/BooksSection";
+import CoursesSection from "@/components/CoursesSection";
 import VideosSection from "@/components/VideosSection";
 import RecruiterSummary from "@/components/RecruiterSummary";
 import { VerseOfTheDay } from "@/components/VerseOfTheDay";
@@ -42,6 +43,7 @@ const Index = () => {
             <VerseOfTheDay placement="homepage" />
             
             <ProjectsSection />
+            <CoursesSection />
             <BooksSection />
             <VideosSection />
           </div>

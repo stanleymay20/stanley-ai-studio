@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAdmin } from '@/contexts/AdminContext';
 import { toast } from '@/hooks/use-toast';
 
-type TableName = 'profile' | 'projects' | 'books' | 'videos';
+type TableName = 'profile' | 'projects' | 'books' | 'videos' | 'courses';
 
 export function useAdminData<T>(table: TableName) {
   const { adminSecret } = useAdmin();

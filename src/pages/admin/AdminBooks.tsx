@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAdminData } from '@/hooks/useAdminData';
-import { ImageUploader } from '@/components/admin/ImageUploader';
+import { ThumbnailUploader } from '@/components/admin/ThumbnailUploader';
 import { AIWriterButtons } from '@/components/admin/AIWriterButtons';
 import { Loader2, Plus, Pencil, Trash2, ExternalLink, BookOpen, Eye, EyeOff } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
@@ -120,18 +120,7 @@ const AdminBooks = () => {
             </DialogHeader>
             {editingBook && (
               <div className="grid gap-6 py-4">
-                {/* Book Cover */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Book Cover</Label>
-                  <ImageUploader
-                    value={editingBook.cover_url}
-                    onChange={(url) => handleChange('cover_url', url)}
-                    folder="books"
-                    aspectRatio="portrait"
-                  />
-                </div>
-
-                {/* Title */}
+                {/* Title first (needed for AI thumbnail) */}
                 <div className="grid gap-2">
                   <Label htmlFor="title" className="text-sm font-medium">Title *</Label>
                   <Input
@@ -139,6 +128,19 @@ const AdminBooks = () => {
                     value={editingBook.title || ''}
                     onChange={(e) => handleChange('title', e.target.value)}
                     placeholder="Book title"
+                  />
+                </div>
+
+                {/* Book Cover with AI Generation */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Book Cover</Label>
+                  <ThumbnailUploader
+                    value={editingBook.cover_url}
+                    onChange={(url) => handleChange('cover_url', url)}
+                    title={editingBook.title || ''}
+                    category={editingBook.status || 'reading'}
+                    contentType="book"
+                    folder="books"
                   />
                 </div>
 
