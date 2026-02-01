@@ -6,6 +6,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AdminProvider } from "@/contexts/AdminContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import ProjectsPage from "./pages/ProjectsPage";
+import VideosPage from "./pages/VideosPage";
+import CoursesPage from "./pages/CoursesPage";
+import BooksPage from "./pages/BooksPage";
 import AdminIndex from "./pages/admin/index";
 import AdminProfilePage from "./pages/admin/ProfilePage";
 import AdminProjectsPage from "./pages/admin/ProjectsPage";
@@ -27,6 +31,10 @@ const App = () => (
         <AdminProvider>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/videos" element={<VideosPage />} />
+            <Route path="/courses" element={<CoursesPage />} />
+            <Route path="/books" element={<BooksPage />} />
             <Route path="/admin" element={<AdminIndex />} />
             <Route path="/admin/profile" element={<AdminProfilePage />} />
             <Route path="/admin/projects" element={<AdminProjectsPage />} />
