@@ -5,6 +5,7 @@ import ProjectsSection from "@/components/ProjectsSection";
 import MembershipsSection from "@/components/MembershipsSection";
 import BooksSection from "@/components/BooksSection";
 import VideosSection from "@/components/VideosSection";
+import RecruiterSummary from "@/components/RecruiterSummary";
 import { VerseOfTheDay } from "@/components/VerseOfTheDay";
 
 const Index = () => {
@@ -22,7 +23,10 @@ const Index = () => {
           
           {/* Right Content */}
           <div className="lg:col-span-8 space-y-8 animate-slide-in-right">
-            {/* Verse of the Day - Homepage placement */}
+            {/* Recruiter Summary - Top priority visibility */}
+            <RecruiterSummary />
+            
+            {/* Verse of the Day - Subtle, below the fold */}
             <VerseOfTheDay placement="homepage" />
             
             <ProjectsSection />
