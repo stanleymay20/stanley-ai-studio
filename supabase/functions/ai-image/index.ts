@@ -8,11 +8,69 @@ const corsHeaders = {
 
 const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')
 
+// Rate limiting: simple in-memory store
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT = 10; // requests per window (lower for image generation)
+const RATE_WINDOW = 60 * 1000; // 1 minute
+
+function isRateLimited(identifier: string): boolean {
+  const now = Date.now();
+  const record = rateLimitStore.get(identifier);
+  
+  if (!record || now > record.resetTime) {
+    rateLimitStore.set(identifier, { count: 1, resetTime: now + RATE_WINDOW });
+    return false;
+  }
+  
+  if (record.count >= RATE_LIMIT) {
+    return true;
+  }
+  
+  record.count++;
+  return false;
+}
+
 interface GenerateRequest {
   title: string
   category?: string
   style?: 'clean' | 'professional' | 'tech' | 'minimal'
-  type?: 'project' | 'book' | 'video' | 'profile'
+  type?: 'project' | 'book' | 'video' | 'profile' | 'course'
+  secret: string
+}
+
+// Input validation
+function validateInput(body: any): { valid: boolean; error?: string } {
+  if (!body || typeof body !== 'object') {
+    return { valid: false, error: 'Invalid request body' };
+  }
+  
+  const { title, secret, style, type } = body;
+  
+  if (!secret || typeof secret !== 'string') {
+    return { valid: false, error: 'Admin authentication required' };
+  }
+  
+  if (!title || typeof title !== 'string') {
+    return { valid: false, error: 'Title is required' };
+  }
+  
+  if (title.length > 500) {
+    return { valid: false, error: 'Title too long (max 500 characters)' };
+  }
+  
+  // Validate style if provided
+  const validStyles = ['clean', 'professional', 'tech', 'minimal'];
+  if (style && !validStyles.includes(style)) {
+    return { valid: false, error: 'Invalid style' };
+  }
+  
+  // Validate type if provided
+  const validTypes = ['project', 'book', 'video', 'profile', 'course'];
+  if (type && !validTypes.includes(type)) {
+    return { valid: false, error: 'Invalid type' };
+  }
+  
+  return { valid: true };
 }
 
 function buildPrompt(options: GenerateRequest): string {
@@ -30,15 +88,20 @@ function buildPrompt(options: GenerateRequest): string {
     book: 'book cover with elegant and literary aesthetic',
     video: 'video thumbnail that is eye-catching and dynamic',
     profile: 'professional portrait background or avatar style',
+    course: 'online course or educational content',
   }
 
   const styleDesc = styleDescriptions[style || 'professional']
   const typeDesc = typeContext[type || 'project']
 
-  let prompt = `Create a ${type === 'video' ? '16:9 aspect ratio' : 'square'} thumbnail image for a ${typeDesc} titled "${title}".`
+  // Sanitize title to prevent prompt injection
+  const sanitizedTitle = title.replace(/[<>{}[\]]/g, '').substring(0, 200);
+
+  let prompt = `Create a ${type === 'video' || type === 'course' ? '16:9 aspect ratio' : type === 'book' ? '3:4 portrait' : 'square'} thumbnail image for a ${typeDesc} titled "${sanitizedTitle}".`
   
   if (category) {
-    prompt += ` The category is ${category}.`
+    const sanitizedCategory = String(category).replace(/[<>{}[\]]/g, '').substring(0, 100);
+    prompt += ` The category is ${sanitizedCategory}.`
   }
 
   prompt += ` Style: ${styleDesc}. The image should be portfolio-safe, clean, and professional. Do not include any text or words in the image - it should be purely visual/abstract. Ultra high resolution.`
@@ -61,20 +124,42 @@ Deno.serve(async (req) => {
       )
     }
 
-    const body: GenerateRequest = await req.json()
-    const { title, category, style, type } = body
-
-    if (!title?.trim()) {
+    const body = await req.json()
+    
+    // Input validation
+    const validation = validateInput(body);
+    if (!validation.valid) {
+      console.error('AI Image validation failed:', validation.error);
       return new Response(
-        JSON.stringify({ error: 'Title is required' }),
+        JSON.stringify({ error: validation.error }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      );
     }
 
-    console.log(`Generating image for: "${title}" (${type}, ${style})`)
+    const { title, category, style, type, secret } = body as GenerateRequest
 
-    const prompt = buildPrompt(body)
-    console.log('Prompt:', prompt)
+    // Admin authentication check
+    const adminSecret = Deno.env.get('ADMIN_SECRET');
+    if (!adminSecret || secret !== adminSecret) {
+      console.error('AI Image: Unauthorized access attempt');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Rate limiting
+    if (isRateLimited('ai-image-generation')) {
+      console.warn('AI Image: Rate limit exceeded');
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Please wait a moment.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`AI Image: Generating for "${title}" (${type}, ${style}) - admin authenticated`)
+
+    const prompt = buildPrompt(body as GenerateRequest)
 
     // Call the Lovable AI API for image generation
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -96,8 +181,7 @@ Deno.serve(async (req) => {
     })
 
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('AI API error:', response.status, errorText)
+      console.error('AI API error:', response.status)
       throw new Error(`AI API error: ${response.status}`)
     }
 
@@ -108,7 +192,7 @@ Deno.serve(async (req) => {
     const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url
 
     if (!imageUrl) {
-      console.error('No image in response:', JSON.stringify(data))
+      console.error('No image in response')
       throw new Error('No image generated')
     }
 
@@ -141,7 +225,7 @@ Deno.serve(async (req) => {
       .from('portfolio-assets')
       .getPublicUrl(fileName)
 
-    console.log('Image stored successfully:', publicUrl)
+    console.log('AI Image: Stored successfully')
 
     return new Response(
       JSON.stringify({ url: publicUrl }),
@@ -149,9 +233,9 @@ Deno.serve(async (req) => {
     )
 
   } catch (error) {
-    console.error('Error generating image:', error)
+    console.error('AI Image error:', error instanceof Error ? error.message : 'Unknown error')
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Failed to generate image' }),
+      JSON.stringify({ error: 'Service temporarily unavailable' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
