@@ -103,16 +103,22 @@ const FeaturedWork = () => {
   }
 
   return (
-    <div className="mb-10 animate-fade-in">
-      <div className="flex items-center justify-between mb-6">
+    <div className="mb-6 animate-fade-in">
+      <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-foreground uppercase tracking-wide flex items-center gap-2">
           <span className="w-1 h-5 bg-primary rounded-full"></span>
           Featured Work
         </h2>
         <span className="text-sm text-muted-foreground">Start here</span>
       </div>
+      
+      {/* Impact Signal */}
+      <p className="text-xs text-muted-foreground mb-4 flex items-center gap-2">
+        <span className="w-1.5 h-1.5 bg-primary/60 rounded-full"></span>
+        Impact: Deployed ML systems · Automated workflows · Data-driven decision tools
+      </p>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Featured Project */}
         {project && (
           <div className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
