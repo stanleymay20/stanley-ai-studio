@@ -194,6 +194,69 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: {
+          created_at: string
+          font_body: string | null
+          font_heading: string | null
+          footer_availability: string | null
+          footer_copyright: string | null
+          footer_quick_links: Json | null
+          footer_tagline: string | null
+          id: string
+          location: string | null
+          navigation_items: Json | null
+          og_image_url: string | null
+          site_description: string | null
+          site_title: string | null
+          social_email: string | null
+          social_github: string | null
+          social_linkedin: string | null
+          social_twitter: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          font_body?: string | null
+          font_heading?: string | null
+          footer_availability?: string | null
+          footer_copyright?: string | null
+          footer_quick_links?: Json | null
+          footer_tagline?: string | null
+          id?: string
+          location?: string | null
+          navigation_items?: Json | null
+          og_image_url?: string | null
+          site_description?: string | null
+          site_title?: string | null
+          social_email?: string | null
+          social_github?: string | null
+          social_linkedin?: string | null
+          social_twitter?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          font_body?: string | null
+          font_heading?: string | null
+          footer_availability?: string | null
+          footer_copyright?: string | null
+          footer_quick_links?: Json | null
+          footer_tagline?: string | null
+          id?: string
+          location?: string | null
+          navigation_items?: Json | null
+          og_image_url?: string | null
+          site_description?: string | null
+          site_title?: string | null
+          social_email?: string | null
+          social_github?: string | null
+          social_linkedin?: string | null
+          social_twitter?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       verse_settings: {
         Row: {
           created_at: string

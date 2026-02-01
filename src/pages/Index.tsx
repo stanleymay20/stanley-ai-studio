@@ -7,15 +7,27 @@ import BooksSection from "@/components/BooksSection";
 import VideosSection from "@/components/VideosSection";
 import RecruiterSummary from "@/components/RecruiterSummary";
 import { VerseOfTheDay } from "@/components/VerseOfTheDay";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { Loader2 } from "lucide-react";
 
 const Index = () => {
+  const { settings, loading } = useSiteSettings();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Sidebar */}
           <div className="lg:col-span-4 animate-slide-in-left">
-            <ProfileHeader />
+            <ProfileHeader location={settings?.location} />
             <EducationSection />
             <CareerSection />
             <MembershipsSection />

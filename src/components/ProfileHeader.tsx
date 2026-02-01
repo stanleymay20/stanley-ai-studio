@@ -13,8 +13,11 @@ interface Profile {
   photo_url: string | null;
   skills: string[];
 }
+interface ProfileHeaderProps {
+  location?: string;
+}
 
-const ProfileHeader = () => {
+const ProfileHeader = ({ location = 'Based in Potsdam' }: ProfileHeaderProps) => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -109,7 +112,7 @@ const ProfileHeader = () => {
         </div>
         <h1 className="text-2xl font-bold text-foreground mb-1">{profile.name}</h1>
         <p className="text-primary font-medium mb-1">{profile.title}</p>
-        <p className="text-sm text-muted-foreground">Based in Potsdam</p>
+        <p className="text-sm text-muted-foreground">{location}</p>
         
         {/* Contact Links */}
         <div className="flex justify-center gap-4 mt-4">
