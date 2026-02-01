@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Mail, Linkedin, Download, Loader2 } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -96,44 +96,21 @@ const RecruiterSummary = () => {
         ))}
       </div>
 
-      {/* Recruiter CTA */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-        <span className="text-sm text-muted-foreground">Interested in working together?</span>
-        <div className="flex items-center gap-2 flex-wrap">
-          {profile.email && (
-            <a href={`mailto:${profile.email}`}>
-              <Button size="sm" className="gap-2">
-                <Mail className="h-4 w-4" />
-                Get in Touch
-              </Button>
-            </a>
-          )}
-          {profile.linkedin && (
-            <a 
-              href={profile.linkedin} 
-              target="_blank" 
-              rel="noopener noreferrer"
-            >
-              <Button size="sm" variant="outline" className="gap-2">
-                <Linkedin className="h-4 w-4" />
-                LinkedIn
-              </Button>
-            </a>
-          )}
-          {profile.resume_url && (
-            <a 
-              href={profile.resume_url} 
-              target="_blank" 
-              rel="noopener noreferrer"
-            >
-              <Button size="sm" variant="outline" className="gap-2">
-                <Download className="h-4 w-4" />
-                Resume
-              </Button>
-            </a>
-          )}
+      {/* Resume Download - Only show if available (contact links are in sidebar) */}
+      {profile.resume_url && (
+        <div className="flex items-center gap-2">
+          <a 
+            href={profile.resume_url} 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            <Button size="sm" variant="outline" className="gap-2">
+              <Download className="h-4 w-4" />
+              Download Resume
+            </Button>
+          </a>
         </div>
-      </div>
+      )}
     </div>
   );
 };
