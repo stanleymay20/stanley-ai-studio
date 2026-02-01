@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import BackToTop from "@/components/BackToTop";
 
 interface BookItem {
   id: string;
@@ -57,7 +58,12 @@ const BooksPage = () => {
 
           <div className="mb-10">
             <h1 className="text-3xl font-bold text-foreground mb-2">Books & Publications</h1>
-            <p className="text-muted-foreground">Books I've written, co-authored, or contributed to.</p>
+            <p className="text-muted-foreground">Books and publications.</p>
+            {!loading && books.length > 0 && (
+              <p className="text-sm text-muted-foreground mt-2">
+                Showing {books.length} publication{books.length !== 1 ? 's' : ''}
+              </p>
+            )}
           </div>
 
           {loading ? (
@@ -79,9 +85,12 @@ const BooksPage = () => {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {books.map((book) => (
-                <div
+                <a
                   key={book.id}
-                  className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1"
+                  href={book.external_link || '#'}
+                  target={book.external_link ? "_blank" : undefined}
+                  rel="noopener noreferrer"
+                  className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1 cursor-pointer block"
                 >
                   <div className="aspect-[3/4] bg-gradient-to-br from-primary/20 via-accent/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
                     {book.cover_url ? (
@@ -106,24 +115,12 @@ const BooksPage = () => {
                     </h3>
                     
                     {book.description && (
-                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 mb-3">
+                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
                         {book.description}
                       </p>
                     )}
-                    
-                    {book.external_link && (
-                      <a
-                        href={book.external_link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary text-sm font-medium hover:underline inline-flex items-center gap-1"
-                      >
-                        View Book
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                    )}
                   </div>
-                </div>
+                </a>
               ))}
             </div>
           )}
@@ -131,6 +128,7 @@ const BooksPage = () => {
       </main>
 
       <Footer />
+      <BackToTop />
     </div>
   );
 };
