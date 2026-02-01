@@ -10,27 +10,25 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useAdminData } from '@/hooks/useAdminData';
 import { ThumbnailUploader } from '@/components/admin/ThumbnailUploader';
 import { AIWriterButtons } from '@/components/admin/AIWriterButtons';
-import { Loader2, Plus, Pencil, Trash2, Play, Eye, EyeOff, ExternalLink } from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, ExternalLink, GraduationCap, Eye, EyeOff } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
 
-type Video = Tables<'videos'>;
+type Course = Tables<'courses'>;
 
-const emptyVideo: Partial<Video> = {
+const emptyCourse: Partial<Course> = {
   title: '',
   description: '',
-  embed_url: '',
   thumbnail_url: '',
-  category: 'Tutorial',
+  external_link: '',
+  category: 'Course',
   published: false,
   sort_order: 0,
 };
 
-const categoryOptions = ['Tutorial', 'Talk', 'Demo', 'Interview', 'Presentation', 'Podcast', 'Other'];
-
-const AdminVideos = () => {
-  const { data, loading, fetchData, createItem, updateItem, deleteItem } = useAdminData<Video>('videos');
+const AdminCourses = () => {
+  const { data, loading, fetchData, createItem, updateItem, deleteItem } = useAdminData<Course>('courses');
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingVideo, setEditingVideo] = useState<Partial<Video> | null>(null);
+  const [editingCourse, setEditingCourse] = useState<Partial<Course> | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -38,42 +36,42 @@ const AdminVideos = () => {
   }, [fetchData]);
 
   const openCreateDialog = () => {
-    setEditingVideo({ ...emptyVideo });
+    setEditingCourse({ ...emptyCourse });
     setDialogOpen(true);
   };
 
-  const openEditDialog = (video: Video) => {
-    setEditingVideo({ ...video });
+  const openEditDialog = (course: Course) => {
+    setEditingCourse({ ...course });
     setDialogOpen(true);
   };
 
-  const handleChange = (field: keyof Video, value: any) => {
-    if (editingVideo) {
-      setEditingVideo({ ...editingVideo, [field]: value });
+  const handleChange = (field: keyof Course, value: any) => {
+    if (editingCourse) {
+      setEditingCourse({ ...editingCourse, [field]: value });
     }
   };
 
   const handleSave = async () => {
-    if (!editingVideo) return;
+    if (!editingCourse) return;
     
     setSaving(true);
-    if (editingVideo.id) {
-      await updateItem(editingVideo.id, editingVideo);
+    if (editingCourse.id) {
+      await updateItem(editingCourse.id, editingCourse);
     } else {
-      await createItem(editingVideo);
+      await createItem(editingCourse);
     }
     setSaving(false);
     setDialogOpen(false);
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this video?')) {
+    if (confirm('Are you sure you want to delete this course?')) {
       await deleteItem(id);
     }
   };
 
-  const togglePublished = async (video: Video) => {
-    await updateItem(video.id, { published: !video.published });
+  const togglePublished = async (course: Course) => {
+    await updateItem(course.id, { published: !course.published });
   };
 
   if (loading) {
@@ -89,47 +87,47 @@ const AdminVideos = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Videos</h1>
+          <h1 className="text-2xl font-bold text-foreground">Courses</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {data.length} video{data.length !== 1 ? 's' : ''} • {data.filter(v => v.published).length} published
+            {data.length} course{data.length !== 1 ? 's' : ''} • {data.filter(c => c.published).length} published
           </p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={openCreateDialog} className="gap-2">
               <Plus className="h-4 w-4" />
-              Add Video
+              Add Course
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-xl">
-                {editingVideo?.id ? 'Edit Video' : 'New Video'}
+                {editingCourse?.id ? 'Edit Course' : 'New Course'}
               </DialogTitle>
             </DialogHeader>
-            {editingVideo && (
+            {editingCourse && (
               <div className="grid gap-6 py-4">
                 {/* Title first (needed for AI thumbnail) */}
                 <div className="grid gap-2">
                   <Label htmlFor="title" className="text-sm font-medium">Title *</Label>
                   <Input
                     id="title"
-                    value={editingVideo.title || ''}
+                    value={editingCourse.title || ''}
                     onChange={(e) => handleChange('title', e.target.value)}
-                    placeholder="Video title"
+                    placeholder="Course title"
                   />
                 </div>
 
-                {/* Thumbnail with AI Generation */}
+                {/* Thumbnail with AI generation */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Thumbnail</Label>
                   <ThumbnailUploader
-                    value={editingVideo.thumbnail_url}
+                    value={editingCourse.thumbnail_url}
                     onChange={(url) => handleChange('thumbnail_url', url)}
-                    title={editingVideo.title || ''}
-                    category={editingVideo.category || 'Tutorial'}
-                    contentType="video"
-                    folder="videos"
+                    title={editingCourse.title || ''}
+                    category={editingCourse.category || 'Course'}
+                    contentType="course"
+                    folder="courses"
                   />
                 </div>
 
@@ -138,30 +136,18 @@ const AdminVideos = () => {
                   <div className="flex items-center justify-between">
                     <Label htmlFor="description" className="text-sm font-medium">Description</Label>
                     <AIWriterButtons
-                      content={editingVideo.description || editingVideo.title || ''}
+                      content={editingCourse.description || editingCourse.title || ''}
                       onResult={(text) => handleChange('description', text)}
-                      context={{ type: 'video', category: editingVideo.category || undefined }}
+                      context={{ type: 'course' }}
                     />
                   </div>
                   <Textarea
                     id="description"
-                    value={editingVideo.description || ''}
+                    value={editingCourse.description || ''}
                     onChange={(e) => handleChange('description', e.target.value)}
-                    placeholder="Brief description of the video..."
+                    placeholder="What does this course teach?"
                     rows={3}
                   />
-                </div>
-
-                {/* Video URL */}
-                <div className="grid gap-2">
-                  <Label htmlFor="embed_url" className="text-sm font-medium">Video URL</Label>
-                  <Input
-                    id="embed_url"
-                    value={editingVideo.embed_url || ''}
-                    onChange={(e) => handleChange('embed_url', e.target.value)}
-                    placeholder="https://www.youtube.com/watch?v=..."
-                  />
-                  <p className="text-xs text-muted-foreground">YouTube, Vimeo, or direct video URL</p>
                 </div>
 
                 {/* Category */}
@@ -169,23 +155,28 @@ const AdminVideos = () => {
                   <Label htmlFor="category" className="text-sm font-medium">Category</Label>
                   <Input
                     id="category"
-                    value={editingVideo.category || ''}
+                    value={editingCourse.category || ''}
                     onChange={(e) => handleChange('category', e.target.value)}
-                    placeholder="Tutorial, Talk..."
-                    list="video-category-options"
+                    placeholder="e.g., Data Science, AI, Business"
                   />
-                  <datalist id="video-category-options">
-                    {categoryOptions.map((cat) => (
-                      <option key={cat} value={cat} />
-                    ))}
-                  </datalist>
+                </div>
+
+                {/* External Link */}
+                <div className="grid gap-2">
+                  <Label htmlFor="external_link" className="text-sm font-medium">Course Link</Label>
+                  <Input
+                    id="external_link"
+                    value={editingCourse.external_link || ''}
+                    onChange={(e) => handleChange('external_link', e.target.value)}
+                    placeholder="https://..."
+                  />
                 </div>
                 
                 {/* Toggle */}
                 <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg border border-border/50">
                   <Switch
                     id="published"
-                    checked={editingVideo.published || false}
+                    checked={editingCourse.published || false}
                     onCheckedChange={(checked) => handleChange('published', checked)}
                   />
                   <Label htmlFor="published" className="text-sm cursor-pointer">
@@ -196,7 +187,7 @@ const AdminVideos = () => {
 
                 <Button onClick={handleSave} disabled={saving} className="mt-2">
                   {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                  {editingVideo.id ? 'Save Changes' : 'Add Video'}
+                  {editingCourse.id ? 'Save Changes' : 'Add Course'}
                 </Button>
               </div>
             )}
@@ -204,73 +195,67 @@ const AdminVideos = () => {
         </Dialog>
       </div>
 
-      {/* Videos Grid */}
+      {/* Courses List */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {data.map((video) => (
-          <Card key={video.id} className="border-border/50 hover:shadow-soft transition-shadow overflow-hidden group">
+        {data.map((course) => (
+          <Card key={course.id} className="border-border/50 hover:shadow-soft transition-shadow overflow-hidden">
             <div className="aspect-video bg-muted relative">
-              {video.thumbnail_url ? (
+              {course.thumbnail_url ? (
                 <img
-                  src={video.thumbnail_url}
-                  alt={video.title}
+                  src={course.thumbnail_url}
+                  alt={course.title}
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500/10 to-purple-600/5">
-                  <Play className="h-12 w-12 text-purple-500/30" />
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+                  <GraduationCap className="h-12 w-12 text-primary/30" />
                 </div>
               )}
-              {/* Play overlay */}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-colors">
-                <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Play className="h-5 w-5 text-foreground ml-0.5" />
-                </div>
-              </div>
               {/* Status Badge */}
               <Badge 
-                variant={video.published ? "default" : "secondary"}
-                className={`absolute top-2 right-2 ${video.published 
+                variant={course.published ? "default" : "secondary"}
+                className={`absolute top-2 right-2 ${course.published 
                   ? "bg-green-500/90 text-white text-xs" 
                   : "bg-black/50 text-white text-xs"
                 }`}
               >
-                {video.published ? 'Published' : 'Draft'}
+                {course.published ? 'Published' : 'Draft'}
               </Badge>
             </div>
             <CardContent className="p-4">
-              <h3 className="font-semibold text-foreground truncate mb-1">{video.title}</h3>
-              {video.category && (
+              <h3 className="font-semibold text-foreground truncate mb-1">{course.title}</h3>
+              {course.category && (
                 <Badge variant="outline" className="text-xs font-normal mb-2">
-                  {video.category}
+                  {course.category}
                 </Badge>
               )}
-              {video.description && (
-                <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{video.description}</p>
+              {course.description && (
+                <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{course.description}</p>
               )}
               <div className="flex items-center gap-1">
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   className="h-8 w-8"
-                  onClick={() => togglePublished(video)}
+                  onClick={() => togglePublished(course)}
                 >
-                  {video.published ? (
+                  {course.published ? (
                     <Eye className="h-4 w-4 text-green-500" />
                   ) : (
                     <EyeOff className="h-4 w-4 text-muted-foreground" />
                   )}
                 </Button>
-                {video.embed_url && (
-                  <a href={video.embed_url} target="_blank" rel="noopener noreferrer">
+                {course.external_link && (
+                  <a href={course.external_link} target="_blank" rel="noopener noreferrer">
                     <Button variant="ghost" size="icon" className="h-8 w-8">
                       <ExternalLink className="h-4 w-4" />
                     </Button>
                   </a>
                 )}
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditDialog(video)}>
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditDialog(course)}>
                   <Pencil className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDelete(video.id)}>
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDelete(course.id)}>
                   <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>
               </div>
@@ -281,13 +266,13 @@ const AdminVideos = () => {
           <Card className="border-dashed border-border col-span-full">
             <CardContent className="flex flex-col items-center justify-center p-12 text-center">
               <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mb-4">
-                <Play className="h-6 w-6 text-muted-foreground" />
+                <GraduationCap className="h-6 w-6 text-muted-foreground" />
               </div>
-              <h3 className="font-medium text-foreground mb-1">No videos yet</h3>
-              <p className="text-sm text-muted-foreground mb-4">Add videos, talks, or tutorials to showcase</p>
+              <h3 className="font-medium text-foreground mb-1">No courses yet</h3>
+              <p className="text-sm text-muted-foreground mb-4">Add courses you've created or taught</p>
               <Button onClick={openCreateDialog} variant="outline">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Video
+                Add Course
               </Button>
             </CardContent>
           </Card>
@@ -297,4 +282,4 @@ const AdminVideos = () => {
   );
 };
 
-export default AdminVideos;
+export default AdminCourses;

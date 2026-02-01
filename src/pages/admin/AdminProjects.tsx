@@ -8,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useAdminData } from '@/hooks/useAdminData';
-import { ImageUploader } from '@/components/admin/ImageUploader';
+import { ThumbnailUploader } from '@/components/admin/ThumbnailUploader';
 import { AIWriterButtons } from '@/components/admin/AIWriterButtons';
 import { Loader2, Plus, Pencil, Trash2, ExternalLink, Github, Sparkles, Eye, EyeOff, GripVertical, FolderOpen } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
@@ -121,18 +121,7 @@ const AdminProjects = () => {
             </DialogHeader>
             {editingProject && (
               <div className="grid gap-6 py-4">
-                {/* Project Image */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Project Image</Label>
-                  <ImageUploader
-                    value={editingProject.image_url}
-                    onChange={(url) => handleChange('image_url', url)}
-                    folder="projects"
-                    aspectRatio="video"
-                  />
-                </div>
-
-                {/* Title */}
+                {/* Title first (needed for AI thumbnail) */}
                 <div className="grid gap-2">
                   <Label htmlFor="title" className="text-sm font-medium">Title *</Label>
                   <Input
@@ -140,6 +129,19 @@ const AdminProjects = () => {
                     value={editingProject.title || ''}
                     onChange={(e) => handleChange('title', e.target.value)}
                     placeholder="My Awesome Project"
+                  />
+                </div>
+
+                {/* Project Image with AI Generation */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Project Thumbnail</Label>
+                  <ThumbnailUploader
+                    value={editingProject.image_url}
+                    onChange={(url) => handleChange('image_url', url)}
+                    title={editingProject.title || ''}
+                    category={editingProject.category || 'AI'}
+                    contentType="project"
+                    folder="projects"
                   />
                 </div>
 

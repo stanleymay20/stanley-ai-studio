@@ -16,7 +16,8 @@ import {
   ChevronRight,
   Image as ImageIcon,
   Book,
-  Settings
+  Settings,
+  GraduationCap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -28,6 +29,7 @@ const navItems = [
   { path: '/admin', label: 'Dashboard', icon: LayoutDashboard, description: 'Overview & stats' },
   { path: '/admin/profile', label: 'Profile', icon: User, description: 'Edit your info' },
   { path: '/admin/projects', label: 'Projects', icon: FolderOpen, description: 'Manage projects' },
+  { path: '/admin/courses', label: 'Courses', icon: GraduationCap, description: 'Teaching content' },
   { path: '/admin/books', label: 'Books', icon: BookOpen, description: 'Book collection' },
   { path: '/admin/videos', label: 'Videos', icon: Video, description: 'Video content' },
   { path: '/admin/verses', label: 'Daily Verse', icon: Book, description: 'Verse of the day' },
