@@ -27,10 +27,10 @@ const emptyBook: Partial<Book> = {
 };
 
 const statusOptions = [
-  { value: 'reading', label: '📖 Currently Reading' },
-  { value: 'completed', label: '✅ Completed' },
-  { value: 'to-read', label: '📚 To Read' },
-  { value: 'recommended', label: '⭐ Recommended' },
+  { value: 'reading', label: 'Currently Reading' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'to-read', label: 'To Read' },
+  { value: 'recommended', label: 'Recommended' },
 ];
 
 const AdminBooks = () => {

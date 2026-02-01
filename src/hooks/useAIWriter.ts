@@ -74,8 +74,8 @@ export function useAIWriter() {
       };
 
       toast({
-        title: '✨ ' + actionLabels[action],
-        description: 'AI has improved your content',
+        title: actionLabels[action],
+        description: 'Content updated successfully',
       });
 
       return data.text;

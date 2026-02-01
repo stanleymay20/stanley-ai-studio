@@ -148,7 +148,7 @@ const AdminVerses = () => {
           body: { action: 'create', table: 'verses', data: editingVerse, secret: adminSecret }
         });
       }
-      toast({ title: '✅ Saved successfully' });
+      toast({ title: 'Saved successfully' });
       setDialogOpen(false);
       await fetchData();
     } catch (error) {
@@ -339,8 +339,8 @@ const AdminVerses = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="automatic">🔄 Automatic (Daily rotation)</SelectItem>
-                  <SelectItem value="manual">✋ Manual (You choose)</SelectItem>
+                  <SelectItem value="automatic">Automatic (Daily rotation)</SelectItem>
+                  <SelectItem value="manual">Manual (You choose)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -354,8 +354,8 @@ const AdminVerses = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="homepage">🏠 Homepage</SelectItem>
-                  <SelectItem value="footer">📎 Footer</SelectItem>
+                  <SelectItem value="homepage">Homepage</SelectItem>
+                  <SelectItem value="footer">Footer</SelectItem>
                 </SelectContent>
               </Select>
             </div>

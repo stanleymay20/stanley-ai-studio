@@ -53,7 +53,7 @@ export const FloatingAIHelp = ({ className }: FloatingAIHelpProps) => {
 
           <div className="mt-4 pt-4 border-t border-border">
             <p className="text-xs text-muted-foreground text-center">
-              AI is here to help you create better content faster ✨
+              AI is here to help you create better content faster
             </p>
           </div>
         </div>

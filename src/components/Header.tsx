@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Moon, Sun, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logoImage from "@/assets/logo.png";
 
 const Header = () => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -42,8 +43,15 @@ const Header = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="text-xl font-bold text-primary">
-            Stanley Osei-Wusu
+          <div className="flex items-center gap-3">
+            <img 
+              src={logoImage} 
+              alt="Stanley Osei-Wusu" 
+              className="h-10 w-10 rounded-full object-cover"
+            />
+            <span className="text-lg font-semibold text-foreground hidden sm:block">
+              Stanley Osei-Wusu
+            </span>
           </div>
 
           {/* Desktop Navigation */}
