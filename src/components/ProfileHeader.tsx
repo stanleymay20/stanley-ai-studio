@@ -147,10 +147,10 @@ const ProfileHeader = () => {
       {/* About Section */}
       {profile.bio && (
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
             <span className="w-1 h-5 bg-primary rounded-full"></span>
             ABOUT
-          </h2>
+          </h3>
           <p className="text-muted-foreground text-sm leading-relaxed">
             {profile.bio}
           </p>
@@ -160,10 +160,10 @@ const ProfileHeader = () => {
       {/* Skills Section */}
       {profile.skills.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
             <span className="w-1 h-5 bg-primary rounded-full"></span>
             SKILLS
-          </h2>
+          </h3>
           <div className="flex flex-wrap gap-2">
             {profile.skills.map((skill, index) => (
               <span

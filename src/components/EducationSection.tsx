@@ -78,10 +78,10 @@ const EducationSection = () => {
 
   return (
     <div className="bg-card rounded-lg p-6 mb-6 border border-border hover:shadow-medium transition-all duration-300">
-      <h2 className="text-lg font-semibold text-foreground mb-4 uppercase tracking-wide flex items-center gap-2">
+      <h3 className="text-lg font-semibold text-foreground mb-4 uppercase tracking-wide flex items-center gap-2">
         <span className="w-1 h-5 bg-primary rounded-full"></span>
         Education
-      </h2>
+      </h3>
       <div className="space-y-4">
         {education.map((edu, index) => (
           <div key={index} className="profile-card p-4 md:p-6 group">

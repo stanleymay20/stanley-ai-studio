@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ExternalLink, Github, Sparkles } from "lucide-react";
+import { ExternalLink, Github } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -45,7 +45,7 @@ const ProjectsSection = () => {
     return (
       <div className="mb-8 animate-fade-in">
         <h2 className="text-lg font-semibold text-foreground mb-6 uppercase tracking-wide flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-primary" />
+          <span className="w-1 h-5 bg-primary rounded-full"></span>
           Projects
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -75,7 +75,7 @@ const ProjectsSection = () => {
   return (
     <div className="mb-8">
       <h2 className="text-lg font-semibold text-foreground mb-6 uppercase tracking-wide flex items-center gap-2">
-        <Sparkles className="h-5 w-5 text-primary" />
+        <span className="w-1 h-5 bg-primary rounded-full"></span>
         Projects
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -106,8 +106,7 @@ const ProjectsSection = () => {
                 </>
               )}
               {project.featured && (
-                <span className="absolute top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                  <Sparkles className="h-3 w-3" />
+                <span className="absolute top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
                   Featured
                 </span>
               )}

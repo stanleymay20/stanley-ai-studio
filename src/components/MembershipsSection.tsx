@@ -107,10 +107,10 @@ const MembershipsSection = () => {
         {/* Memberships & Certifications */}
         {memberships.length > 0 && (
           <div>
-            <h2 className="text-lg font-semibold text-foreground mb-4 uppercase tracking-wide flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-foreground mb-4 uppercase tracking-wide flex items-center gap-2">
               <span className="w-1 h-5 bg-primary rounded-full"></span>
               Memberships & Certifications
-            </h2>
+            </h3>
             <div className="space-y-3">
               {memberships.map((membership, index) => (
                 <div key={index} className="flex items-start gap-3 group">
@@ -129,10 +129,10 @@ const MembershipsSection = () => {
         {/* Languages */}
         {languages.length > 0 && (
           <div>
-            <h2 className="text-lg font-semibold text-foreground mb-4 uppercase tracking-wide flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-foreground mb-4 uppercase tracking-wide flex items-center gap-2">
               <span className="w-1 h-5 bg-accent rounded-full"></span>
               Languages
-            </h2>
+            </h3>
             <div className="flex flex-wrap gap-2">
               {languages.map((lang, index) => (
                 <div 
