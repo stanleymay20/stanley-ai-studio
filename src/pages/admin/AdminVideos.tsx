@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,8 +10,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useAdminData } from '@/hooks/useAdminData';
 import { ThumbnailUploader } from '@/components/admin/ThumbnailUploader';
 import { AIWriterButtons } from '@/components/admin/AIWriterButtons';
-import { Loader2, Plus, Pencil, Trash2, Play, Eye, EyeOff, ExternalLink } from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, Play, Eye, EyeOff, ExternalLink, AlertCircle, CheckCircle } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
+import { toast } from '@/hooks/use-toast';
 
 type Video = Tables<'videos'>;
 
@@ -26,6 +27,39 @@ const emptyVideo: Partial<Video> = {
 };
 
 const categoryOptions = ['Tutorial', 'Talk', 'Demo', 'Interview', 'Presentation', 'Podcast', 'Other'];
+
+// Video URL validation - accepts YouTube, Vimeo, Loom, Google Drive
+const isValidVideoUrl = (url: string): boolean => {
+  if (!url || !url.trim()) return false;
+  const patterns = [
+    /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//,
+    /^https?:\/\/(www\.)?vimeo\.com\//,
+    /^https?:\/\/(www\.)?loom\.com\//,
+    /^https?:\/\/drive\.google\.com\//,
+    /^https?:\/\/(www\.)?dailymotion\.com\//,
+    /^https?:\/\/(www\.)?wistia\.com\//,
+  ];
+  return patterns.some(pattern => pattern.test(url.trim()));
+};
+
+// Get embed URL for preview
+const getEmbedUrl = (url: string): string | null => {
+  if (!url) return null;
+  
+  // YouTube
+  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+  if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
+  
+  // Vimeo
+  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+  
+  // Loom
+  const loomMatch = url.match(/loom\.com\/share\/([a-zA-Z0-9]+)/);
+  if (loomMatch) return `https://www.loom.com/embed/${loomMatch[1]}`;
+  
+  return null;
+};
 
 const AdminVideos = () => {
   const { data, loading, fetchData, createItem, updateItem, deleteItem } = useAdminData<Video>('videos');
@@ -53,8 +87,31 @@ const AdminVideos = () => {
     }
   };
 
+  // URL validation state
+  const urlValidation = useMemo(() => {
+    const url = editingVideo?.embed_url || '';
+    if (!url.trim()) return { valid: false, message: 'Video URL is required' };
+    if (!isValidVideoUrl(url)) return { valid: false, message: 'Please enter a valid YouTube, Vimeo, Loom, or Google Drive URL' };
+    return { valid: true, message: 'Valid video URL' };
+  }, [editingVideo?.embed_url]);
+
+  const embedPreviewUrl = useMemo(() => {
+    return getEmbedUrl(editingVideo?.embed_url || '');
+  }, [editingVideo?.embed_url]);
+
   const handleSave = async () => {
     if (!editingVideo) return;
+    
+    // Validate required fields
+    if (!editingVideo.title?.trim()) {
+      toast({ title: 'Title required', description: 'Please enter a video title', variant: 'destructive' });
+      return;
+    }
+    
+    if (!urlValidation.valid) {
+      toast({ title: 'Invalid URL', description: urlValidation.message, variant: 'destructive' });
+      return;
+    }
     
     setSaving(true);
     if (editingVideo.id) {
@@ -152,16 +209,54 @@ const AdminVideos = () => {
                   />
                 </div>
 
-                {/* Video URL */}
+                {/* Video URL - REQUIRED */}
                 <div className="grid gap-2">
-                  <Label htmlFor="embed_url" className="text-sm font-medium">Video URL</Label>
+                  <Label htmlFor="embed_url" className="text-sm font-medium">
+                    Video URL * <span className="text-xs font-normal text-muted-foreground">(Required)</span>
+                  </Label>
                   <Input
                     id="embed_url"
                     value={editingVideo.embed_url || ''}
                     onChange={(e) => handleChange('embed_url', e.target.value)}
                     placeholder="https://www.youtube.com/watch?v=..."
+                    className={editingVideo.embed_url && !urlValidation.valid ? 'border-destructive' : ''}
                   />
-                  <p className="text-xs text-muted-foreground">YouTube, Vimeo, or direct video URL</p>
+                  {/* Validation feedback */}
+                  <div className="flex items-center gap-1.5">
+                    {editingVideo.embed_url ? (
+                      urlValidation.valid ? (
+                        <>
+                          <CheckCircle className="h-3.5 w-3.5 text-green-500" />
+                          <span className="text-xs text-green-600">{urlValidation.message}</span>
+                        </>
+                      ) : (
+                        <>
+                          <AlertCircle className="h-3.5 w-3.5 text-destructive" />
+                          <span className="text-xs text-destructive">{urlValidation.message}</span>
+                        </>
+                      )
+                    ) : (
+                      <span className="text-xs text-muted-foreground">Supports: YouTube, Vimeo, Loom, Google Drive</span>
+                    )}
+                  </div>
+                  
+                  {/* Embed Preview */}
+                  {embedPreviewUrl && (
+                    <div className="mt-2 rounded-lg overflow-hidden border border-border bg-muted">
+                      <div className="aspect-video">
+                        <iframe
+                          src={embedPreviewUrl}
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          title="Video Preview"
+                        />
+                      </div>
+                      <div className="px-3 py-2 bg-muted/50 border-t border-border">
+                        <p className="text-xs text-muted-foreground">Preview of embedded video</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Category */}

@@ -228,7 +228,7 @@ const FeaturedWork = () => {
                   )}
                   
                   <div className="flex items-center gap-3">
-                    {video.embed_url && (
+                    {video.embed_url && video.embed_url.trim() && (
                       <a
                         href={video.embed_url}
                         target="_blank"
