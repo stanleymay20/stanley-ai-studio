@@ -88,10 +88,15 @@ const VideosPage = () => {
               {videos.map((video) => (
                 <a
                   key={video.id}
-                  href={video.embed_url || '#'}
-                  target={video.embed_url ? "_blank" : undefined}
+                  href={video.embed_url && video.embed_url.trim() ? video.embed_url : undefined}
+                  target={video.embed_url && video.embed_url.trim() ? "_blank" : undefined}
                   rel="noopener noreferrer"
-                  className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1 cursor-pointer block"
+                  className={`group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1 block ${video.embed_url && video.embed_url.trim() ? 'cursor-pointer' : 'cursor-default'}`}
+                  onClick={(e) => {
+                    if (!video.embed_url || !video.embed_url.trim()) {
+                      e.preventDefault();
+                    }
+                  }}
                 >
                   <div className="aspect-video bg-gradient-to-br from-primary/20 via-accent/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
                     {video.thumbnail_url ? (

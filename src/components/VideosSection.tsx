@@ -112,7 +112,7 @@ const VideosSection = () => {
                 </p>
               )}
               
-              {video.embed_url && (
+              {video.embed_url && video.embed_url.trim() && (
                 <a
                   href={video.embed_url}
                   target="_blank"
