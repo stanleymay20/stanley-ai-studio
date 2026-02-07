@@ -10,7 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useAdminData } from '@/hooks/useAdminData';
 import { ThumbnailUploader } from '@/components/admin/ThumbnailUploader';
 import { AIWriterButtons } from '@/components/admin/AIWriterButtons';
-import { Loader2, Plus, Pencil, Trash2, ExternalLink, Github, Sparkles, Eye, EyeOff, GripVertical, FolderOpen } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Loader2, Plus, Pencil, Trash2, ExternalLink, Github, Sparkles, Eye, EyeOff, GripVertical, FolderOpen, FlaskConical } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
 
 type Project = Tables<'projects'>;
@@ -27,6 +28,18 @@ const emptyProject: Partial<Project> = {
   featured: false,
   published: true,
   sort_order: 0,
+  notebook_url: '',
+  demo_type: null,
+};
+
+const isValidNotebookUrl = (url: string): boolean => {
+  if (!url) return true; // empty is valid (optional)
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
 };
 
 const categoryOptions = ['AI', 'Data Science', 'Machine Learning', 'Research', 'Platform', 'Web App', 'Mobile'];
@@ -230,6 +243,52 @@ const AdminProjects = () => {
                   </div>
                 </div>
                 
+                {/* Recruiter Demo Section */}
+                <div className="space-y-4 p-4 bg-muted/30 rounded-lg border border-border/50">
+                  <div className="flex items-center gap-2 mb-1">
+                    <FlaskConical className="h-4 w-4 text-primary" />
+                    <Label className="text-sm font-semibold">Recruiter Demo</Label>
+                  </div>
+                  <p className="text-xs text-muted-foreground -mt-2">
+                    This link allows recruiters to run code in a read-only environment. No setup required.
+                  </p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="col-span-2 grid gap-2">
+                      <Label htmlFor="notebook_url" className="text-sm font-medium">
+                        Notebook URL
+                      </Label>
+                      <Input
+                        id="notebook_url"
+                        value={editingProject.notebook_url || ''}
+                        onChange={(e) => handleChange('notebook_url', e.target.value)}
+                        placeholder="https://colab.research.google.com/..."
+                      />
+                      {editingProject.notebook_url && !isValidNotebookUrl(editingProject.notebook_url) && (
+                        <p className="text-xs text-destructive">Must be a valid HTTPS URL</p>
+                      )}
+                      <p className="text-xs text-muted-foreground">
+                        Google Colab, Deepnote, Observable, or JupyterLite
+                      </p>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="demo_type" className="text-sm font-medium">Demo Type</Label>
+                      <Select
+                        value={editingProject.demo_type || 'none'}
+                        onValueChange={(v) => handleChange('demo_type', v === 'none' ? null : v)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">None</SelectItem>
+                          <SelectItem value="notebook">Notebook</SelectItem>
+                          <SelectItem value="live_demo">Live Demo</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Toggles */}
                 <div className="flex items-center gap-6 p-4 bg-muted/30 rounded-lg border border-border/50">
                   <div className="flex items-center gap-3">
@@ -256,7 +315,7 @@ const AdminProjects = () => {
                   </div>
                 </div>
 
-                <Button onClick={handleSave} disabled={saving} className="mt-2">
+                <Button onClick={handleSave} disabled={saving || (!!editingProject.notebook_url && !isValidNotebookUrl(editingProject.notebook_url || ''))} className="mt-2">
                   {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                   {editingProject.id ? 'Save Changes' : 'Create Project'}
                 </Button>
@@ -319,6 +378,12 @@ const AdminProjects = () => {
                       <span className="text-xs text-muted-foreground">
                         +{(project.tech_stack?.length || 0) - 3} more
                       </span>
+                    )}
+                    {project.notebook_url && (
+                      <Badge variant="outline" className="text-xs font-normal gap-1">
+                        <FlaskConical className="h-3 w-3" />
+                        Notebook
+                      </Badge>
                     )}
                   </div>
                 </div>
