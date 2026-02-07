@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ExternalLink, Github, ArrowLeft } from "lucide-react";
+import { ExternalLink, Github, ArrowLeft, FlaskConical, Play } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import Header from "@/components/Header";
@@ -18,6 +18,8 @@ interface Project {
   image_url: string | null;
   featured: boolean | null;
   category: string | null;
+  notebook_url: string | null;
+  demo_type: string | null;
 }
 
 const ProjectsPage = () => {
@@ -92,41 +94,45 @@ const ProjectsPage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map((project) => (
-                <a
+                {projects.map((project) => (
+                <div
                   key={project.id}
-                  href={project.external_link || project.github_link || '#'}
-                  target={project.external_link || project.github_link ? "_blank" : undefined}
-                  rel="noopener noreferrer"
-                  className={`group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1 cursor-pointer block ${project.featured ? 'ring-2 ring-primary/20' : ''}`}
+                  className={`group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1 ${project.featured ? 'ring-2 ring-primary/20' : ''}`}
                 >
-                  <div className="h-48 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
-                    {project.image_url ? (
-                      <img 
-                        src={project.image_url} 
-                        alt={project.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-transparent flex items-center justify-center">
-                        {project.github_link ? (
-                          <Github className="h-12 w-12 text-primary/60" />
-                        ) : (
-                          <ExternalLink className="h-12 w-12 text-primary/60" />
-                        )}
-                      </div>
-                    )}
-                    {project.featured && (
-                      <span className="absolute top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
-                        Featured
-                      </span>
-                    )}
-                    {project.category && (
-                      <span className="absolute top-3 left-3 bg-foreground/80 text-background px-2 py-0.5 rounded text-xs font-medium">
-                        {project.category}
-                      </span>
-                    )}
-                  </div>
+                  <a
+                    href={project.external_link || project.github_link || '#'}
+                    target={project.external_link || project.github_link ? "_blank" : undefined}
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <div className="h-48 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
+                      {project.image_url ? (
+                        <img 
+                          src={project.image_url} 
+                          alt={project.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-transparent flex items-center justify-center">
+                          {project.github_link ? (
+                            <Github className="h-12 w-12 text-primary/60" />
+                          ) : (
+                            <ExternalLink className="h-12 w-12 text-primary/60" />
+                          )}
+                        </div>
+                      )}
+                      {project.featured && (
+                        <span className="absolute top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
+                          Featured
+                        </span>
+                      )}
+                      {project.category && (
+                        <span className="absolute top-3 left-3 bg-foreground/80 text-background px-2 py-0.5 rounded text-xs font-medium">
+                          {project.category}
+                        </span>
+                      )}
+                    </div>
+                  </a>
                   
                   <div className="p-5">
                     <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
@@ -156,12 +162,55 @@ const ProjectsPage = () => {
                     )}
                     
                     {project.description && (
-                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
+                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3 mb-4">
                         {project.description}
                       </p>
                     )}
+
+                    {/* Action buttons */}
+                    <div className="flex items-center gap-3 flex-wrap">
+                      {project.external_link && (
+                        <a
+                          href={project.external_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary text-sm font-medium hover:underline inline-flex items-center gap-1"
+                        >
+                          View Project
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                      {project.github_link && (
+                        <a
+                          href={project.github_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-muted-foreground text-sm font-medium hover:text-foreground inline-flex items-center gap-1"
+                        >
+                          <Github className="h-4 w-4" />
+                          Code
+                        </a>
+                      )}
+                      {project.notebook_url && (
+                        <a
+                          href={project.notebook_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-xs font-medium hover:bg-primary/90 transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Play className="h-3 w-3" />
+                          {project.demo_type === 'live_demo' ? 'Live Demo' : 'Run Notebook'}
+                        </a>
+                      )}
+                    </div>
+                    {project.notebook_url && (
+                      <p className="text-[11px] text-muted-foreground mt-2">
+                        Designed for recruiter review — safe, read-only, no installation.
+                      </p>
+                    )}
                   </div>
-                </a>
+                </div>
               ))}
             </div>
           )}

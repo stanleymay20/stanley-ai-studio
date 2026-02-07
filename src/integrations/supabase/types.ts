@@ -189,12 +189,14 @@ export type Database = {
         Row: {
           category: string | null
           created_at: string
+          demo_type: string | null
           description: string | null
           external_link: string | null
           featured: boolean | null
           github_link: string | null
           id: string
           image_url: string | null
+          notebook_url: string | null
           published: boolean | null
           sort_order: number | null
           subtitle: string | null
@@ -205,12 +207,14 @@ export type Database = {
         Insert: {
           category?: string | null
           created_at?: string
+          demo_type?: string | null
           description?: string | null
           external_link?: string | null
           featured?: boolean | null
           github_link?: string | null
           id?: string
           image_url?: string | null
+          notebook_url?: string | null
           published?: boolean | null
           sort_order?: number | null
           subtitle?: string | null
@@ -221,12 +225,14 @@ export type Database = {
         Update: {
           category?: string | null
           created_at?: string
+          demo_type?: string | null
           description?: string | null
           external_link?: string | null
           featured?: boolean | null
           github_link?: string | null
           id?: string
           image_url?: string | null
+          notebook_url?: string | null
           published?: boolean | null
           sort_order?: number | null
           subtitle?: string | null

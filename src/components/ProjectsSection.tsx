@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ExternalLink, Github } from "lucide-react";
+import { ExternalLink, Github, Play } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -13,6 +13,8 @@ interface Project {
   github_link: string | null;
   image_url: string | null;
   featured: boolean | null;
+  notebook_url: string | null;
+  demo_type: string | null;
 }
 
 const ProjectsSection = () => {
@@ -147,7 +149,7 @@ const ProjectsSection = () => {
               )}
               
               {/* Links */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
                 {project.external_link && (
                   <a
                     href={project.external_link}
@@ -170,7 +172,23 @@ const ProjectsSection = () => {
                     Code
                   </a>
                 )}
+                {project.notebook_url && (
+                  <a
+                    href={project.notebook_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-xs font-medium hover:bg-primary/90 transition-colors"
+                  >
+                    <Play className="h-3 w-3" />
+                    {project.demo_type === 'live_demo' ? 'Live Demo' : 'Run Notebook'}
+                  </a>
+                )}
               </div>
+              {project.notebook_url && (
+                <p className="text-[11px] text-muted-foreground mt-2">
+                  Designed for recruiter review — safe, read-only, no installation.
+                </p>
+              )}
             </div>
           </div>
         ))}
