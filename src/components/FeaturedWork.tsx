@@ -50,7 +50,7 @@ const FeaturedWork = () => {
           .eq('featured', true)
           .order('sort_order', { ascending: true })
           .limit(1)
-          .single();
+          .maybeSingle();
 
         // Fetch first published video
         const { data: videoData } = await supabase
