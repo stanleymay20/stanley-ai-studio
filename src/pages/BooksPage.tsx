@@ -84,13 +84,18 @@ const BooksPage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {books.map((book) => (
-                <a
+              {books.map((book) => {
+                const Wrapper = book.external_link ? 'a' : 'div';
+                const linkProps = book.external_link ? {
+                  href: book.external_link,
+                  target: "_blank" as const,
+                  rel: "noopener noreferrer",
+                } : {};
+                return (
+                <Wrapper
                   key={book.id}
-                  href={book.external_link || '#'}
-                  target={book.external_link ? "_blank" : undefined}
-                  rel="noopener noreferrer"
-                  className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1 cursor-pointer block"
+                  {...linkProps}
+                  className={`group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1 block ${book.external_link ? 'cursor-pointer' : ''}`}
                 >
                   <div className="aspect-[3/4] bg-gradient-to-br from-primary/20 via-accent/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
                     {book.cover_url ? (
@@ -120,8 +125,9 @@ const BooksPage = () => {
                       </p>
                     )}
                   </div>
-                </a>
-              ))}
+                </Wrapper>
+                );
+              })}
             </div>
           )}
         </div>
