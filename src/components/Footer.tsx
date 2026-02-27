@@ -118,12 +118,6 @@ const Footer = () => {
               © {currentYear} Stanley Osei-Wusu. {copyright}
             </div>
             <div className="flex items-center space-x-6 text-sm text-muted-foreground">
-              <button className="hover:text-primary transition-colors duration-200">
-                Privacy Policy
-              </button>
-              <button className="hover:text-primary transition-colors duration-200">
-                Terms of Service
-              </button>
               <div className="flex items-center space-x-2">
                 <span>Built with</span>
                 <span className="text-primary">React</span>

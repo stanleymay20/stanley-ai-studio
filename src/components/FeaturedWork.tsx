@@ -59,7 +59,7 @@ const FeaturedWork = () => {
           .eq('published', true)
           .order('sort_order', { ascending: true })
           .limit(1)
-          .single();
+          .maybeSingle();
 
         // Fetch first published course
         const { data: courseData } = await supabase
@@ -68,7 +68,7 @@ const FeaturedWork = () => {
           .eq('published', true)
           .order('sort_order', { ascending: true })
           .limit(1)
-          .single();
+          .maybeSingle();
 
         setProject(projectData);
         setVideo(videoData);
