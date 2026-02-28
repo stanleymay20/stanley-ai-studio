@@ -17,6 +17,13 @@ interface Project {
   demo_type: string | null;
 }
 
+const normalizeUrl = (url: string | null): string | null => {
+  if (!url || !url.trim()) return null;
+  const trimmed = url.trim();
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
+  return `https://${trimmed}`;
+};
+
 const ProjectsSection = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -152,7 +159,7 @@ const ProjectsSection = () => {
               <div className="flex items-center gap-3 flex-wrap">
                 {project.external_link && (
                   <a
-                    href={project.external_link}
+                    href={normalizeUrl(project.external_link)!}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary text-sm font-medium hover:underline inline-flex items-center gap-1 group/link"
@@ -163,7 +170,7 @@ const ProjectsSection = () => {
                 )}
                 {project.github_link && (
                   <a
-                    href={project.github_link}
+                    href={normalizeUrl(project.github_link)!}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-muted-foreground text-sm font-medium hover:text-foreground inline-flex items-center gap-1"
@@ -174,7 +181,7 @@ const ProjectsSection = () => {
                 )}
                 {project.notebook_url && (
                   <a
-                    href={project.notebook_url}
+                    href={normalizeUrl(project.notebook_url)!}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-xs font-medium hover:bg-primary/90 transition-colors"
