@@ -99,40 +99,43 @@ const ProjectsPage = () => {
                   key={project.id}
                   className={`group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1 ${project.featured ? 'ring-2 ring-primary/20' : ''}`}
                 >
-                  <a
-                    href={project.external_link || project.github_link || '#'}
-                    target={project.external_link || project.github_link ? "_blank" : undefined}
-                    rel="noopener noreferrer"
-                    className="block"
-                  >
-                    <div className="h-48 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
-                      {project.image_url ? (
-                        <img 
-                          src={project.image_url} 
-                          alt={project.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-transparent flex items-center justify-center">
-                          {project.github_link ? (
-                            <Github className="h-12 w-12 text-primary/60" />
-                          ) : (
-                            <ExternalLink className="h-12 w-12 text-primary/60" />
-                          )}
-                        </div>
-                      )}
-                      {project.featured && (
-                        <span className="absolute top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
-                          Featured
-                        </span>
-                      )}
-                      {project.category && (
-                        <span className="absolute top-3 left-3 bg-foreground/80 text-background px-2 py-0.5 rounded text-xs font-medium">
-                          {project.category}
-                        </span>
-                      )}
-                    </div>
-                  </a>
+                  {(() => {
+                    const imageContent = (
+                      <div className="h-48 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
+                        {project.image_url ? (
+                          <img 
+                            src={project.image_url} 
+                            alt={project.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-transparent flex items-center justify-center">
+                            {project.github_link ? (
+                              <Github className="h-12 w-12 text-primary/60" />
+                            ) : (
+                              <ExternalLink className="h-12 w-12 text-primary/60" />
+                            )}
+                          </div>
+                        )}
+                        {project.featured && (
+                          <span className="absolute top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
+                            Featured
+                          </span>
+                        )}
+                        {project.category && (
+                          <span className="absolute top-3 left-3 bg-foreground/80 text-background px-2 py-0.5 rounded text-xs font-medium">
+                            {project.category}
+                          </span>
+                        )}
+                      </div>
+                    );
+                    const linkHref = project.external_link || project.github_link;
+                    return linkHref ? (
+                      <a href={linkHref} target="_blank" rel="noopener noreferrer" className="block">
+                        {imageContent}
+                      </a>
+                    ) : imageContent;
+                  })()}
                   
                   <div className="p-5">
                     <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
