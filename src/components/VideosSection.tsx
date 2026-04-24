@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Play, ExternalLink } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { ExternalLink, Play } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { supabase } from "@/integrations/supabase/client";
 import { getEmbedUrl, isDirectVideoFile } from "@/lib/videoEmbed";
 
 interface VideoItem {
