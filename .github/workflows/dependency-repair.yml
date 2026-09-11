@@ -1,0 +1,85 @@
+name: Stanley AI Studio Controlled Dependency Repair
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/dependency-repair.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Use current npm resolver
+        run: |
+          npm install --global npm@latest
+          npm --version
+
+      - name: Prepare patched dependency manifest
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const p = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          p.dependencies ||= {};
+          p.devDependencies ||= {};
+
+          p.dependencies['react-router-dom'] = '^7.18.3';
+          p.dependencies['@supabase/supabase-js'] = '^2.116.0';
+
+          p.devDependencies['vite'] = '^6.4.3';
+          p.devDependencies['@vitejs/plugin-react-swc'] = '^4.3.3';
+          p.devDependencies['lovable-tagger'] = '^1.3.3';
+          p.devDependencies['postcss'] = '^8.5.28';
+          p.devDependencies['tailwindcss'] = '^3.4.19';
+
+          fs.writeFileSync('package.json', JSON.stringify(p, null, 2) + '\n');
+          NODE
+          rm -f package-lock.json
+
+      - name: Resolve dependency graph once
+        run: npm install --no-audit --no-fund
+
+      - name: Apply compatible transitive security fixes
+        run: npm audit fix
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Production build
+        run: npm run build
+
+      - name: Gate production dependencies
+        run: npm audit --omit=dev --audit-level=moderate
+
+      - name: Gate full dependency tree
+        run: npm audit --audit-level=high
+
+      - name: Commit validated dependency graph
+        shell: bash
+        run: |
+          if git diff --quiet -- package.json package-lock.json; then
+            echo "No dependency changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "Harden AI Studio dependency graph [skip ci]"
+          git push origin HEAD:main
