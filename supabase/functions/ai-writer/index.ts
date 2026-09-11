@@ -28,12 +28,12 @@ function isRateLimited(identifier: string): boolean {
 }
 
 // Input validation
-function validateInput(body: any): { valid: boolean; error?: string } {
-  if (!body || typeof body !== 'object') {
+function validateInput(body: unknown): { valid: boolean; error?: string } {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
     return { valid: false, error: 'Invalid request body' };
   }
   
-  const { action, content, secret } = body;
+  const { action, content, secret } = body as Record<string, unknown>;
   
   if (!secret || typeof secret !== 'string') {
     return { valid: false, error: 'Admin authentication required' };

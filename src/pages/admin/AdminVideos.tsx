@@ -81,7 +81,7 @@ const AdminVideos = () => {
     setDialogOpen(true);
   };
 
-  const handleChange = (field: keyof Video, value: any) => {
+  const handleChange = <K extends keyof Video,>(field: K, value: Video[K]) => {
     if (editingVideo) {
       setEditingVideo({ ...editingVideo, [field]: value });
     }

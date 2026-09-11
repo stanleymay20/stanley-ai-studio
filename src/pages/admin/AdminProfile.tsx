@@ -62,7 +62,7 @@ const AdminProfile = () => {
     }
   }, [data]);
 
-  const handleChange = (field: keyof Profile, value: any) => {
+  const handleChange = <K extends keyof Profile,>(field: K, value: Profile[K]) => {
     if (profile) {
       setProfile({ ...profile, [field]: value });
     }

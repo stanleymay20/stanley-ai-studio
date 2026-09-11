@@ -45,7 +45,7 @@ const AdminCourses = () => {
     setDialogOpen(true);
   };
 
-  const handleChange = (field: keyof Course, value: any) => {
+  const handleChange = <K extends keyof Course,>(field: K, value: Course[K]) => {
     if (editingCourse) {
       setEditingCourse({ ...editingCourse, [field]: value });
     }

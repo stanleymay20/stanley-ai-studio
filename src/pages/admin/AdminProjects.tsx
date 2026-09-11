@@ -67,7 +67,7 @@ const AdminProjects = () => {
     setDialogOpen(true);
   };
 
-  const handleChange = (field: keyof Project, value: any) => {
+  const handleChange = <K extends keyof Project,>(field: K, value: Project[K]) => {
     if (editingProject) {
       setEditingProject({ ...editingProject, [field]: value });
     }

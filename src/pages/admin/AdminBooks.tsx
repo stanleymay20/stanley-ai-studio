@@ -53,7 +53,7 @@ const AdminBooks = () => {
     setDialogOpen(true);
   };
 
-  const handleChange = (field: keyof Book, value: any) => {
+  const handleChange = <K extends keyof Book,>(field: K, value: Book[K]) => {
     if (editingBook) {
       setEditingBook({ ...editingBook, [field]: value });
     }

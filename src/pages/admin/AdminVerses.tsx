@@ -128,7 +128,7 @@ const AdminVerses = () => {
     setDialogOpen(true);
   };
 
-  const handleChange = (field: keyof Verse, value: any) => {
+  const handleChange = <K extends keyof Verse,>(field: K, value: Verse[K]) => {
     if (editingVerse) {
       setEditingVerse({ ...editingVerse, [field]: value });
     }

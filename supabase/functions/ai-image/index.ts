@@ -39,12 +39,12 @@ interface GenerateRequest {
 }
 
 // Input validation
-function validateInput(body: any): { valid: boolean; error?: string } {
-  if (!body || typeof body !== 'object') {
+function validateInput(body: unknown): { valid: boolean; error?: string } {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
     return { valid: false, error: 'Invalid request body' };
   }
   
-  const { title, secret, style, type } = body;
+  const { title, secret, style, type } = body as Record<string, unknown>;
   
   if (!secret || typeof secret !== 'string') {
     return { valid: false, error: 'Admin authentication required' };

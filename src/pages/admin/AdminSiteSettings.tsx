@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAdmin } from '@/contexts/AdminContext';
-import { useAdminSiteSettings, availableFonts, NavigationItem } from '@/hooks/useSiteSettings';
+import { useAdminSiteSettings, availableFonts, NavigationItem, SiteSettings } from '@/hooks/useSiteSettings';
 import { toast } from '@/hooks/use-toast';
 import { Loader2, Save, Plus, Trash2, Type, Navigation, Footprints, Share2, Globe, MapPin } from 'lucide-react';
 
@@ -20,7 +20,7 @@ const AdminSiteSettings = () => {
     }
   }, [adminSecret, fetchSettings]);
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = <K extends keyof SiteSettings,>(field: K, value: SiteSettings[K]) => {
     if (settings) {
       setSettings({ ...settings, [field]: value });
     }
