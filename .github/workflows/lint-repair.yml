@@ -1,0 +1,142 @@
+name: AI Studio Controlled Lint Repair
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/lint-repair.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Apply typed lint repairs
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+
+          function replaceExact(path, from, to) {
+            const source = fs.readFileSync(path, 'utf8');
+            const count = source.split(from).length - 1;
+            if (count !== 1) {
+              throw new Error(`${path}: expected exactly one match, found ${count}`);
+            }
+            fs.writeFileSync(path, source.replace(from, to));
+          }
+
+          replaceExact(
+            'src/pages/admin/AdminBooks.tsx',
+            'const handleChange = (field: keyof Book, value: any) => {',
+            'const handleChange = <K extends keyof Book,>(field: K, value: Book[K]) => {'
+          );
+
+          replaceExact(
+            'src/pages/admin/AdminCourses.tsx',
+            'const handleChange = (field: keyof Course, value: any) => {',
+            'const handleChange = <K extends keyof Course,>(field: K, value: Course[K]) => {'
+          );
+
+          replaceExact(
+            'src/pages/admin/AdminProfile.tsx',
+            'const handleChange = (field: keyof Profile, value: any) => {',
+            'const handleChange = <K extends keyof Profile,>(field: K, value: Profile[K]) => {'
+          );
+
+          replaceExact(
+            'src/pages/admin/AdminProjects.tsx',
+            'const handleChange = (field: keyof Project, value: any) => {',
+            'const handleChange = <K extends keyof Project,>(field: K, value: Project[K]) => {'
+          );
+
+          replaceExact(
+            'src/pages/admin/AdminVerses.tsx',
+            'const handleChange = (field: keyof Verse, value: any) => {',
+            'const handleChange = <K extends keyof Verse,>(field: K, value: Verse[K]) => {'
+          );
+
+          replaceExact(
+            'src/pages/admin/AdminVideos.tsx',
+            'const handleChange = (field: keyof Video, value: any) => {',
+            'const handleChange = <K extends keyof Video,>(field: K, value: Video[K]) => {'
+          );
+
+          replaceExact(
+            'src/pages/admin/AdminSiteSettings.tsx',
+            "import { useAdminSiteSettings, availableFonts, NavigationItem } from '@/hooks/useSiteSettings';",
+            "import { useAdminSiteSettings, availableFonts, NavigationItem, SiteSettings } from '@/hooks/useSiteSettings';"
+          );
+
+          replaceExact(
+            'src/pages/admin/AdminSiteSettings.tsx',
+            'const handleChange = (field: string, value: any) => {',
+            'const handleChange = <K extends keyof SiteSettings,>(field: K, value: SiteSettings[K]) => {'
+          );
+
+          replaceExact(
+            'supabase/functions/ai-image/index.ts',
+            'function validateInput(body: any): { valid: boolean; error?: string } {\n  if (!body || typeof body !== \'object\') {\n    return { valid: false, error: \'Invalid request body\' };\n  }\n  \n  const { title, secret, style, type } = body;',
+            'function validateInput(body: unknown): { valid: boolean; error?: string } {\n  if (!body || typeof body !== \'object\' || Array.isArray(body)) {\n    return { valid: false, error: \'Invalid request body\' };\n  }\n  \n  const { title, secret, style, type } = body as Record<string, unknown>;'
+          );
+
+          replaceExact(
+            'supabase/functions/ai-writer/index.ts',
+            'function validateInput(body: any): { valid: boolean; error?: string } {\n  if (!body || typeof body !== \'object\') {\n    return { valid: false, error: \'Invalid request body\' };\n  }\n  \n  const { action, content, secret } = body;',
+            'function validateInput(body: unknown): { valid: boolean; error?: string } {\n  if (!body || typeof body !== \'object\' || Array.isArray(body)) {\n    return { valid: false, error: \'Invalid request body\' };\n  }\n  \n  const { action, content, secret } = body as Record<string, unknown>;'
+          );
+
+          replaceExact(
+            'tailwind.config.ts',
+            'import type { Config } from "tailwindcss";\n',
+            'import type { Config } from "tailwindcss";\nimport animate from "tailwindcss-animate";\n'
+          );
+
+          replaceExact(
+            'tailwind.config.ts',
+            'plugins: [require("tailwindcss-animate")],',
+            'plugins: [animate],'
+          );
+          NODE
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Production build
+        run: npm run build
+
+      - name: Commit validated repairs
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/pages/admin/AdminBooks.tsx \
+                  src/pages/admin/AdminCourses.tsx \
+                  src/pages/admin/AdminProfile.tsx \
+                  src/pages/admin/AdminProjects.tsx \
+                  src/pages/admin/AdminSiteSettings.tsx \
+                  src/pages/admin/AdminVerses.tsx \
+                  src/pages/admin/AdminVideos.tsx \
+                  supabase/functions/ai-image/index.ts \
+                  supabase/functions/ai-writer/index.ts \
+                  tailwind.config.ts
+          git commit -m "Repair AI Studio type-safety lint errors [skip ci]"
+          git push origin HEAD:main
