@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Github, Linkedin, Mail, Twitter, ExternalLink } from "lucide-react";
+import { Github, Linkedin, Mail, Twitter, ExternalLink, type LucideIcon } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const Footer = () => {
@@ -32,7 +32,7 @@ const Footer = () => {
       icon: Mail,
       description: "Get in touch directly"
     }
-  ].filter(Boolean) as { name: string; url: string; icon: any; description: string }[];
+  ].filter(Boolean) as { name: string; url: string; icon: LucideIcon; description: string }[];
 
   const quickLinks = [
     { label: "Projects", href: "/projects" },
