@@ -1,73 +1,93 @@
-# Welcome to your Lovable project
+# Stanley AI Studio
 
-## Project info
+Stanley AI Studio is the canonical repository for a Supabase-backed portfolio and content-management application used to present projects, books, courses, videos, education, career history and featured work through a recruiter-oriented public interface.
 
-**URL**: https://lovable.dev/projects/cb753226-b385-4070-b5be-681e95c539ed
+The repository also contains administrative surfaces for maintaining that content. It supersedes the old `AI_Studio` placeholder repository.
 
-## How can I edit this code?
+## Public application
 
-There are several ways of editing your application.
+Current routes include:
 
-**Use Lovable**
+- `/` — portfolio home and recruiter summary;
+- `/projects` — project portfolio;
+- `/videos` — video content;
+- `/courses` — courses and learning evidence;
+- `/books` — books and publishing work.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/cb753226-b385-4070-b5be-681e95c539ed) and start prompting.
+The home page is organized around recruiter signal strength, including a recruiter summary, featured work, project previews, videos, courses and books.
 
-Changes made via Lovable will be committed automatically to this repo.
+## Administration
 
-**Use your preferred IDE**
+The application currently exposes administrative routes for:
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- profile;
+- projects;
+- books;
+- videos;
+- media;
+- verses;
+- courses;
+- site settings.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Administrative access is verified through a Supabase Edge Function and the client automatically clears the local admin session after inactivity. This is an application control, not a claim of production-grade identity or authorization hardening.
 
-Follow these steps:
+## Technology
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+- TypeScript
+- React 18
+- Vite
+- React Router
+- TanStack Query
+- Supabase
+- shadcn/ui / Radix UI
+- Tailwind CSS
+- Zod
+- Netlify configuration
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## Local development
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Requirements
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+- Node.js
+- npm
+
+### Setup
+
+```bash
+git clone https://github.com/stanleymay20/stanley-ai-studio.git
+cd stanley-ai-studio
+npm ci
+cp .env.example .env
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The frontend expects these public client values:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```env
+VITE_SUPABASE_URL=
+VITE_SUPABASE_PUBLISHABLE_KEY=
+```
 
-**Use GitHub Codespaces**
+Do not commit populated environment files. `.env` and `.env.*` are ignored; `.env.example` is the intentional template.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Quality commands
 
-## What technologies are used for this project?
+```bash
+npm run lint
+npm run build
+```
 
-This project is built with:
+A repository CI workflow is being used to verify those commands against the locked dependency graph.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Security notes
 
-## How can I deploy this project?
+- The previously tracked `.env` file has been removed from the current tree and future environment files are ignored.
+- Any credential that was ever committed to public Git history should be treated as exposed and rotated outside GitHub.
+- Only publishable Supabase client configuration belongs in the frontend.
+- Administrative authorization must continue to be enforced server-side; possession of client state alone must never confer privileged database access.
 
-Simply open [Lovable](https://lovable.dev/projects/cb753226-b385-4070-b5be-681e95c539ed) and click on Share -> Publish.
+## Canonical status
 
-## Can I connect a custom domain to my Lovable project?
+**Canonical AI Studio repository.**
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+The repository `stanleymay20/AI_Studio` is retained only as a legacy name/redirect and should not receive new feature work.
