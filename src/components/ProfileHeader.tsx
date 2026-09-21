@@ -13,11 +13,23 @@ interface Profile {
   photo_url: string | null;
   skills: string[];
 }
+
 interface ProfileHeaderProps {
-  location?: string;
+  location?: string | null;
 }
 
-const ProfileHeader = ({ location = 'Based in Potsdam' }: ProfileHeaderProps) => {
+const FALLBACK_PROFILE: Profile = {
+  name: "Stanley Osei-Wusu",
+  title: "AI Engineer & Data Scientist",
+  bio: "I build applied AI, data-engineering, and decision-support systems with an emphasis on reliability, explainability, and real-world use.",
+  email: "stanleymay20@gmail.com",
+  linkedin: "https://www.linkedin.com/in/stanley-osei-wusu",
+  github: "https://github.com/stanleymay20",
+  photo_url: null,
+  skills: ["Python", "Machine Learning", "TypeScript", "SQL", "Supabase", "PostgreSQL", "APIs", "Data Engineering"],
+};
+
+const ProfileHeader = ({ location }: ProfileHeaderProps) => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -25,25 +37,25 @@ const ProfileHeader = ({ location = 'Based in Potsdam' }: ProfileHeaderProps) =>
     const fetchProfile = async () => {
       try {
         const { data, error } = await supabase
-          .from('profile')
-          .select('name, title, bio, email, linkedin, github, photo_url, skills')
+          .from("profile")
+          .select("name, title, bio, email, linkedin, github, photo_url, skills")
           .limit(1)
           .single();
 
         if (error) throw error;
 
-        // Parse skills from JSON
         const skillsData = data.skills;
-        const parsedSkills: string[] = Array.isArray(skillsData) 
-          ? skillsData.filter((s): s is string => typeof s === 'string')
+        const parsedSkills: string[] = Array.isArray(skillsData)
+          ? skillsData.filter((skill): skill is string => typeof skill === "string")
           : [];
 
         setProfile({
           ...data,
-          skills: parsedSkills,
+          skills: parsedSkills.length > 0 ? parsedSkills : FALLBACK_PROFILE.skills,
         });
       } catch (error) {
-        console.error('Error fetching profile:', error);
+        console.error("Error fetching profile:", error);
+        setProfile(FALLBACK_PROFILE);
       } finally {
         setLoading(false);
       }
@@ -52,12 +64,13 @@ const ProfileHeader = ({ location = 'Based in Potsdam' }: ProfileHeaderProps) =>
     fetchProfile();
   }, []);
 
-  // Helper to ensure URLs have https://
   const formatUrl = (url: string | null): string => {
-    if (!url) return '';
-    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (!url) return "";
+    if (url.startsWith("http://") || url.startsWith("https://")) return url;
     return `https://${url}`;
   };
+
+  const displayLocation = location?.trim() || "Berlin-Brandenburg, Germany";
 
   if (loading) {
     return (
@@ -89,56 +102,58 @@ const ProfileHeader = ({ location = 'Based in Potsdam' }: ProfileHeaderProps) =>
     );
   }
 
-  if (!profile) {
-    return null;
-  }
+  const visibleProfile = profile || FALLBACK_PROFILE;
 
   return (
     <div className="bg-card rounded-lg p-6 mb-6 border border-border hover:shadow-medium transition-all duration-300">
-      {/* Profile Image */}
       <div className="text-center mb-6">
         <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-primary/30 overflow-hidden hover:scale-105 transition-transform duration-300">
-          {profile.photo_url ? (
-            <img 
-              src={profile.photo_url} 
-              alt={profile.name} 
+          {visibleProfile.photo_url ? (
+            <img
+              src={visibleProfile.photo_url}
+              alt={visibleProfile.name}
               className="w-full h-full object-cover"
             />
           ) : (
             <span className="text-xl font-bold gradient-text">
-              {profile.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+              {visibleProfile.name.split(" ").map((name) => name[0]).join("").slice(0, 2)}
             </span>
           )}
         </div>
-        <h1 className="text-2xl font-bold text-foreground mb-1">{profile.name}</h1>
-        <p className="text-primary font-medium mb-1">{profile.title}</p>
-        <p className="text-sm text-muted-foreground">{location}</p>
-        
-        {/* Contact Links */}
+        <h1 className="text-2xl font-bold text-foreground mb-1">{visibleProfile.name}</h1>
+        <p className="text-primary font-medium mb-1">{visibleProfile.title}</p>
+        <p className="text-sm text-muted-foreground">{displayLocation}</p>
+
         <div className="flex justify-center gap-4 mt-4">
-          {profile.linkedin && (
+          {visibleProfile.linkedin && (
             <a
-              href={formatUrl(profile.linkedin)}
+              href={formatUrl(visibleProfile.linkedin)}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Stanley Osei-Wusu on LinkedIn"
+              title="LinkedIn"
               className="text-muted-foreground hover:text-primary transition-all duration-200 hover:scale-110"
             >
               <Linkedin className="h-5 w-5" />
             </a>
           )}
-          {profile.email && (
+          {visibleProfile.email && (
             <a
-              href={`mailto:${profile.email}`}
+              href={`mailto:${visibleProfile.email}`}
+              aria-label="Email Stanley Osei-Wusu"
+              title="Email"
               className="text-muted-foreground hover:text-primary transition-all duration-200 hover:scale-110"
             >
               <Mail className="h-5 w-5" />
             </a>
           )}
-          {profile.github && (
+          {visibleProfile.github && (
             <a
-              href={formatUrl(profile.github)}
+              href={formatUrl(visibleProfile.github)}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Stanley Osei-Wusu on GitHub"
+              title="GitHub"
               className="text-muted-foreground hover:text-primary transition-all duration-200 hover:scale-110"
             >
               <Github className="h-5 w-5" />
@@ -147,28 +162,24 @@ const ProfileHeader = ({ location = 'Based in Potsdam' }: ProfileHeaderProps) =>
         </div>
       </div>
 
-      {/* About Section */}
-      {profile.bio && (
+      {visibleProfile.bio && (
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
-            <span className="w-1 h-5 bg-primary rounded-full"></span>
+          <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+            <span className="w-1 h-5 bg-primary rounded-full" aria-hidden="true"></span>
             ABOUT
-          </h3>
-          <p className="text-muted-foreground text-sm leading-relaxed">
-            {profile.bio}
-          </p>
+          </h2>
+          <p className="text-muted-foreground text-sm leading-relaxed">{visibleProfile.bio}</p>
         </div>
       )}
 
-      {/* Skills Section */}
-      {profile.skills.length > 0 && (
+      {visibleProfile.skills.length > 0 && (
         <div>
-          <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
-            <span className="w-1 h-5 bg-primary rounded-full"></span>
+          <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+            <span className="w-1 h-5 bg-primary rounded-full" aria-hidden="true"></span>
             SKILLS
-          </h3>
+          </h2>
           <div className="flex flex-wrap gap-2">
-            {profile.skills.map((skill, index) => (
+            {visibleProfile.skills.map((skill, index) => (
               <span
                 key={skill}
                 className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium border border-primary/20 hover:bg-primary/20 hover:scale-105 transition-all duration-200 cursor-default"
