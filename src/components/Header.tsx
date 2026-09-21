@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Moon, Sun, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import logoImage from "@/assets/logo.png";
 
 const Header = () => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -13,7 +12,7 @@ const Header = () => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
     const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     const initialTheme = savedTheme || systemTheme;
-    
+
     setTheme(initialTheme);
     document.documentElement.classList.toggle("dark", initialTheme === "dark");
   }, []);
@@ -44,20 +43,20 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 glass-card border-b">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3">
-            <img 
-              src={logoImage} 
-              alt="Stanley Osei-Wusu" 
-              className="h-10 w-10 rounded-full object-cover"
+          <Link to="/" className="flex items-center gap-3" aria-label="Stanley Osei-Wusu home">
+            <img
+              src="/favicon.svg"
+              alt=""
+              width="40"
+              height="40"
+              className="h-10 w-10 rounded-2xl"
             />
             <span className="text-lg font-semibold text-foreground hidden sm:block">
               Stanley Osei-Wusu
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-8" aria-label="Primary navigation">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -73,7 +72,6 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Theme Toggle & Mobile Menu */}
           <div className="flex items-center space-x-4">
             <Button
               variant="ghost"
@@ -95,6 +93,7 @@ const Header = () => {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden hover:bg-muted"
               aria-label="Toggle menu"
+              aria-expanded={isMenuOpen}
             >
               {isMenuOpen ? (
                 <X className="h-5 w-5" />
@@ -105,9 +104,8 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
         {isMenuOpen && (
-          <nav className="md:hidden pb-4 animate-fade-in">
+          <nav className="md:hidden pb-4 animate-fade-in" aria-label="Mobile navigation">
             <div className="flex flex-col space-y-4">
               {navItems.map((item) => (
                 <Link
