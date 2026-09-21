@@ -1,47 +1,35 @@
 import { useEffect, useState } from "react";
-import { ExternalLink, Github, Play } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ArrowRight, ExternalLink, Github, Play } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-
-interface Project {
-  id: string;
-  title: string;
-  subtitle: string | null;
-  description: string | null;
-  tech_stack: string[] | null;
-  external_link: string | null;
-  github_link: string | null;
-  image_url: string | null;
-  featured: boolean | null;
-  notebook_url: string | null;
-  demo_type: string | null;
-}
+import { portfolioFallbackProjects, type PortfolioProject } from "@/data/portfolioFallback";
 
 const normalizeUrl = (url: string | null): string | null => {
   if (!url || !url.trim()) return null;
   const trimmed = url.trim();
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
   return `https://${trimmed}`;
 };
 
 const ProjectsSection = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<PortfolioProject[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         const { data, error } = await supabase
-          .from('projects')
-          .select('*')
-          .eq('published', true)
-          .order('featured', { ascending: false })
-          .order('sort_order', { ascending: true });
+          .from("projects")
+          .select("*")
+          .eq("published", true)
+          .order("featured", { ascending: false })
+          .order("sort_order", { ascending: true });
 
         if (error) throw error;
         setProjects(data || []);
       } catch (error) {
-        console.error('Error fetching projects:', error);
+        console.error("Error fetching projects:", error);
       } finally {
         setLoading(false);
       }
@@ -77,29 +65,44 @@ const ProjectsSection = () => {
     );
   }
 
-  if (projects.length === 0) {
-    return null;
-  }
+  const visibleProjects = projects.length > 0 ? projects : portfolioFallbackProjects;
+  const usingFallback = projects.length === 0;
 
   return (
-    <div className="mb-6">
-      <h2 className="text-lg font-semibold text-foreground mb-4 uppercase tracking-wide flex items-center gap-2">
-        <span className="w-1 h-5 bg-primary rounded-full"></span>
-        Projects
-      </h2>
+    <section className="mb-6" aria-labelledby="projects-heading">
+      <div className="flex items-center justify-between gap-4 mb-2">
+        <h2 id="projects-heading" className="text-lg font-semibold text-foreground uppercase tracking-wide flex items-center gap-2">
+          <span className="w-1 h-5 bg-primary rounded-full"></span>
+          Projects
+        </h2>
+        <Link
+          to="/projects"
+          className="text-sm text-primary font-medium hover:underline inline-flex items-center gap-1"
+        >
+          View all
+          <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+      </div>
+
+      <p className="text-sm text-muted-foreground mb-4">
+        {usingFallback
+          ? "Selected public engineering and data-science work from GitHub."
+          : "Selected AI, data-science, and software projects."}
+      </p>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {projects.map((project, index) => (
-          <div
+        {visibleProjects.map((project, index) => (
+          <article
             key={project.id}
-            className={`group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1 ${project.featured ? 'md:col-span-2' : ''}`}
+            className={`group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1 ${project.featured ? "md:col-span-2" : ""}`}
             style={{ animationDelay: `${index * 100}ms` }}
           >
-            {/* Project Image */}
             <div className="h-40 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
               {project.image_url ? (
-                <img 
-                  src={project.image_url} 
+                <img
+                  src={project.image_url}
                   alt={project.title}
+                  loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               ) : (
@@ -114,23 +117,29 @@ const ProjectsSection = () => {
                   </div>
                 </>
               )}
+
+              {project.category && (
+                <span className="absolute top-3 left-3 bg-foreground/80 text-background px-2 py-0.5 rounded text-xs font-medium">
+                  {project.category}
+                </span>
+              )}
+
               {project.featured && (
                 <span className="absolute top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
                   Featured
                 </span>
               )}
             </div>
-            
+
             <div className="p-4">
               <h3 className="text-lg font-semibold text-foreground mb-2 leading-tight group-hover:text-primary transition-colors duration-200">
                 {project.title}
               </h3>
-              
+
               {project.subtitle && (
                 <p className="text-sm text-muted-foreground mb-2">{project.subtitle}</p>
               )}
-              
-              {/* Tech Stack */}
+
               {project.tech_stack && project.tech_stack.length > 0 && (
                 <div className="flex flex-wrap gap-1 mb-3">
                   {project.tech_stack.slice(0, 4).map((tech) => (
@@ -148,14 +157,13 @@ const ProjectsSection = () => {
                   )}
                 </div>
               )}
-              
+
               {project.description && (
                 <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">
                   {project.description}
                 </p>
               )}
-              
-              {/* Links */}
+
               <div className="flex items-center gap-3 flex-wrap">
                 {project.external_link && (
                   <a
@@ -187,20 +195,15 @@ const ProjectsSection = () => {
                     className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-xs font-medium hover:bg-primary/90 transition-colors"
                   >
                     <Play className="h-3 w-3" />
-                    {project.demo_type === 'live_demo' ? 'Live Demo' : 'Run Notebook'}
+                    {project.demo_type === "live_demo" ? "Live Demo" : "Run Notebook"}
                   </a>
                 )}
               </div>
-              {project.notebook_url && (
-                <p className="text-[11px] text-muted-foreground mt-2">
-                  Designed for recruiter review — safe, read-only, no installation.
-                </p>
-              )}
             </div>
-          </div>
+          </article>
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 

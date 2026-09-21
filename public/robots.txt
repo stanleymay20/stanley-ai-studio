@@ -1,5 +1,5 @@
 # Stanley Osei-Wusu Portfolio - Robots.txt
-# Block admin routes from all crawlers
+# Public portfolio is crawlable; admin routes remain private from crawlers.
 
 User-agent: *
 Disallow: /admin
@@ -18,4 +18,4 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-Sitemap: https://stanley-ai-studio.lovable.app/sitemap.xml
+Sitemap: https://stanleyoseiwusu.com/sitemap.xml
