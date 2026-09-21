@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
+import Seo from "@/components/Seo";
 import { getEmbedUrl, isDirectVideoFile } from "@/lib/videoEmbed";
 
 interface Video {
@@ -24,7 +25,7 @@ const VideoCard = ({ video }: { video: Video }) => {
   const isDirect = embedSrc ? isDirectVideoFile(embedSrc) : false;
 
   return (
-    <div className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
+    <article className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
       <div className="relative aspect-video bg-gradient-to-br from-primary/20 via-accent/10 to-primary/5 overflow-hidden">
         {playing && embedSrc ? (
           isDirect ? (
@@ -36,7 +37,7 @@ const VideoCard = ({ video }: { video: Video }) => {
             />
           ) : (
             <iframe
-              src={`${embedSrc}${embedSrc.includes('?') ? '&' : '?'}autoplay=1`}
+              src={`${embedSrc}${embedSrc.includes("?") ? "&" : "?"}autoplay=1`}
               title={video.title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
@@ -55,6 +56,7 @@ const VideoCard = ({ video }: { video: Video }) => {
               <img
                 src={video.thumbnail_url}
                 alt={video.title}
+                loading="lazy"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
             ) : (
@@ -79,9 +81,9 @@ const VideoCard = ({ video }: { video: Video }) => {
       </div>
 
       <div className="p-5">
-        <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+        <h2 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
           {video.title}
-        </h3>
+        </h2>
 
         {video.description && (
           <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3 mb-3">
@@ -101,7 +103,7 @@ const VideoCard = ({ video }: { video: Video }) => {
           </a>
         )}
       </div>
-    </div>
+    </article>
   );
 };
 
@@ -113,15 +115,15 @@ const VideosPage = () => {
     const fetchVideos = async () => {
       try {
         const { data, error } = await supabase
-          .from('videos')
-          .select('*')
-          .eq('published', true)
-          .order('sort_order', { ascending: true });
+          .from("videos")
+          .select("*")
+          .eq("published", true)
+          .order("sort_order", { ascending: true });
 
         if (error) throw error;
         setVideos(data || []);
       } catch (error) {
-        console.error('Error fetching videos:', error);
+        console.error("Error fetching videos:", error);
       } finally {
         setLoading(false);
       }
@@ -132,12 +134,17 @@ const VideosPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title="AI & Machine Learning Videos | Stanley Osei-Wusu"
+        description="Tutorials and demonstrations by Stanley Osei-Wusu covering AI, machine learning, and technical concepts."
+        path="/videos"
+      />
       <Header />
-      
+
       <main className="pt-24 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -145,11 +152,11 @@ const VideosPage = () => {
           </Link>
 
           <div className="mb-10">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Videos</h1>
-            <p className="text-muted-foreground">Talks, tutorials, and demos.</p>
+            <h1 className="text-3xl font-bold text-foreground mb-2">AI & Machine Learning Videos</h1>
+            <p className="text-muted-foreground">Technical tutorials, explainers, and demonstrations.</p>
             {!loading && videos.length > 0 && (
               <p className="text-sm text-muted-foreground mt-2">
-                Showing {videos.length} video{videos.length !== 1 ? 's' : ''}
+                Showing {videos.length} video{videos.length !== 1 ? "s" : ""}
               </p>
             )}
           </div>
@@ -169,7 +176,7 @@ const VideosPage = () => {
             </div>
           ) : videos.length === 0 ? (
             <div className="text-center py-16">
-              <p className="text-muted-foreground">No videos available yet.</p>
+              <p className="text-muted-foreground">Video content is being prepared.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

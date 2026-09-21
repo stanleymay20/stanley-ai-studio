@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ExternalLink, Github, Play } from "lucide-react";
+import { ArrowLeft, ArrowRight, ExternalLink, Github, Play } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import Header from "@/components/Header";
@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
 import Seo from "@/components/Seo";
 import { portfolioFallbackProjects, type PortfolioProject } from "@/data/portfolioFallback";
+import { getCaseStudySlug } from "@/data/projectCaseStudies";
 
 const normalizeUrl = (url: string | null): string | null => {
   if (!url || !url.trim()) return null;
@@ -94,122 +95,139 @@ const ProjectsPage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {visibleProjects.map((project) => (
-                <article
-                  key={project.id}
-                  className={`group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1 ${project.featured ? "ring-2 ring-primary/20" : ""}`}
-                >
-                  {(() => {
-                    const imageContent = (
-                      <div className="h-48 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
-                        {project.image_url ? (
-                          <img
-                            src={project.image_url}
-                            alt={project.title}
-                            loading="lazy"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-transparent flex items-center justify-center">
-                            {project.github_link ? (
-                              <Github className="h-12 w-12 text-primary/60" />
-                            ) : (
-                              <ExternalLink className="h-12 w-12 text-primary/60" />
-                            )}
-                          </div>
-                        )}
-                        {project.featured && (
-                          <span className="absolute top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
-                            Featured
-                          </span>
-                        )}
-                        {project.category && (
-                          <span className="absolute top-3 left-3 bg-foreground/80 text-background px-2 py-0.5 rounded text-xs font-medium">
-                            {project.category}
-                          </span>
-                        )}
-                      </div>
-                    );
+              {visibleProjects.map((project) => {
+                const caseStudySlug = getCaseStudySlug(project.title);
 
-                    const linkHref = normalizeUrl(project.external_link) || normalizeUrl(project.github_link);
-                    return linkHref ? (
-                      <a href={linkHref} target="_blank" rel="noopener noreferrer" className="block">
-                        {imageContent}
-                      </a>
-                    ) : imageContent;
-                  })()}
+                return (
+                  <article
+                    key={project.id}
+                    className={`group bg-card border border-border rounded-lg overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1 ${project.featured ? "ring-2 ring-primary/20" : ""}`}
+                  >
+                    {(() => {
+                      const imageContent = (
+                        <div className="h-48 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
+                          {project.image_url ? (
+                            <img
+                              src={project.image_url}
+                              alt={project.title}
+                              loading="lazy"
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-transparent flex items-center justify-center">
+                              {project.github_link ? (
+                                <Github className="h-12 w-12 text-primary/60" />
+                              ) : (
+                                <ExternalLink className="h-12 w-12 text-primary/60" />
+                              )}
+                            </div>
+                          )}
+                          {project.featured && (
+                            <span className="absolute top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
+                              Featured
+                            </span>
+                          )}
+                          {project.category && (
+                            <span className="absolute top-3 left-3 bg-foreground/80 text-background px-2 py-0.5 rounded text-xs font-medium">
+                              {project.category}
+                            </span>
+                          )}
+                        </div>
+                      );
 
-                  <div className="p-5">
-                    <h2 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                      {project.title}
-                    </h2>
+                      if (caseStudySlug) {
+                        return <Link to={`/projects/${caseStudySlug}`} className="block">{imageContent}</Link>;
+                      }
 
-                    {project.subtitle && (
-                      <p className="text-sm text-muted-foreground mb-2">{project.subtitle}</p>
-                    )}
+                      const linkHref = normalizeUrl(project.external_link) || normalizeUrl(project.github_link);
+                      return linkHref ? (
+                        <a href={linkHref} target="_blank" rel="noopener noreferrer" className="block">
+                          {imageContent}
+                        </a>
+                      ) : imageContent;
+                    })()}
 
-                    {project.tech_stack && project.tech_stack.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-3">
-                        {project.tech_stack.slice(0, 4).map((tech) => (
-                          <span
-                            key={tech}
-                            className="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-medium"
+                    <div className="p-5">
+                      <h2 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                        {project.title}
+                      </h2>
+
+                      {project.subtitle && (
+                        <p className="text-sm text-muted-foreground mb-2">{project.subtitle}</p>
+                      )}
+
+                      {project.tech_stack && project.tech_stack.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-3">
+                          {project.tech_stack.slice(0, 4).map((tech) => (
+                            <span
+                              key={tech}
+                              className="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-medium"
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                          {project.tech_stack.length > 4 && (
+                            <span className="text-xs text-muted-foreground px-2 py-1">
+                              +{project.tech_stack.length - 4} more
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {project.description && (
+                        <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3 mb-4">
+                          {project.description}
+                        </p>
+                      )}
+
+                      <div className="flex items-center gap-3 flex-wrap">
+                        {caseStudySlug && (
+                          <Link
+                            to={`/projects/${caseStudySlug}`}
+                            className="text-primary text-sm font-medium hover:underline inline-flex items-center gap-1"
                           >
-                            {tech}
-                          </span>
-                        ))}
-                        {project.tech_stack.length > 4 && (
-                          <span className="text-xs text-muted-foreground px-2 py-1">
-                            +{project.tech_stack.length - 4} more
-                          </span>
+                            Case Study
+                            <ArrowRight className="h-3 w-3" />
+                          </Link>
+                        )}
+                        {project.external_link && (
+                          <a
+                            href={normalizeUrl(project.external_link)!}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary text-sm font-medium hover:underline inline-flex items-center gap-1"
+                          >
+                            Live
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        )}
+                        {project.github_link && (
+                          <a
+                            href={normalizeUrl(project.github_link)!}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-muted-foreground text-sm font-medium hover:text-foreground inline-flex items-center gap-1"
+                          >
+                            <Github className="h-4 w-4" />
+                            Code
+                          </a>
+                        )}
+                        {project.notebook_url && (
+                          <a
+                            href={normalizeUrl(project.notebook_url)!}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-xs font-medium hover:bg-primary/90 transition-colors"
+                          >
+                            <Play className="h-3 w-3" />
+                            {project.demo_type === "live_demo" ? "Live Demo" : "Run Notebook"}
+                          </a>
                         )}
                       </div>
-                    )}
-
-                    {project.description && (
-                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3 mb-4">
-                        {project.description}
-                      </p>
-                    )}
-
-                    <div className="flex items-center gap-3 flex-wrap">
-                      {project.external_link && (
-                        <a
-                          href={normalizeUrl(project.external_link)!}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary text-sm font-medium hover:underline inline-flex items-center gap-1"
-                        >
-                          View Project
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      )}
-                      {project.github_link && (
-                        <a
-                          href={normalizeUrl(project.github_link)!}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-muted-foreground text-sm font-medium hover:text-foreground inline-flex items-center gap-1"
-                        >
-                          <Github className="h-4 w-4" />
-                          Code
-                        </a>
-                      )}
-                      {project.notebook_url && (
-                        <a
-                          href={normalizeUrl(project.notebook_url)!}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-xs font-medium hover:bg-primary/90 transition-colors"
-                        >
-                          <Play className="h-3 w-3" />
-                          {project.demo_type === "live_demo" ? "Live Demo" : "Run Notebook"}
-                        </a>
-                      )}
                     </div>
-                  </div>
-                </article>
-              ))}
+                  </article>
+                );
+              })}
             </div>
           )}
         </div>
