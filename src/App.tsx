@@ -7,6 +7,7 @@ import { AdminProvider } from "@/contexts/AdminContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ProjectsPage from "./pages/ProjectsPage";
+import ProjectCaseStudyPage from "./pages/ProjectCaseStudyPage";
 import VideosPage from "./pages/VideosPage";
 import CoursesPage from "./pages/CoursesPage";
 import BooksPage from "./pages/BooksPage";
@@ -32,6 +33,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/projects/:slug" element={<ProjectCaseStudyPage />} />
             <Route path="/videos" element={<VideosPage />} />
             <Route path="/courses" element={<CoursesPage />} />
             <Route path="/books" element={<BooksPage />} />
@@ -44,7 +46,6 @@ const App = () => (
             <Route path="/admin/verses" element={<AdminVersesPage />} />
             <Route path="/admin/courses" element={<AdminCoursesPage />} />
             <Route path="/admin/settings" element={<SiteSettingsPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AdminProvider>
