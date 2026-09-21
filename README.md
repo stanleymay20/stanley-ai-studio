@@ -24,7 +24,10 @@ Production hosting is configured for Netlify from the `main` branch.
 - publish directory: `dist`;
 - runtime: Node.js 22;
 - SPA fallback routing and security headers are defined in `netlify.toml`;
-- public Supabase client configuration is supplied through the hosting environment rather than committed environment files.
+- public Supabase client configuration is read from the hosting environment when available;
+- the browser client also carries the same publishable production fallback so a missing host injection cannot prevent React from booting.
+
+The fallback contains only public client configuration. Supabase service-role or other privileged secrets must never be embedded in the browser bundle.
 
 The custom production domain should only be switched after the independent Netlify deployment has been verified end to end.
 
@@ -73,7 +76,7 @@ cp .env.example .env
 npm run dev
 ```
 
-The frontend expects these public client values:
+The frontend accepts these public client values:
 
 ```env
 VITE_SUPABASE_URL=
@@ -94,7 +97,7 @@ A repository CI workflow is being used to verify those commands against the lock
 ## Security notes
 
 - The previously tracked `.env` file has been removed from the current tree and future environment files are ignored.
-- Any credential that was ever committed to public Git history should be treated as exposed and rotated outside GitHub.
+- Any privileged credential that was ever committed to public Git history should be treated as exposed and rotated outside GitHub.
 - Only publishable Supabase client configuration belongs in the frontend.
 - Administrative authorization must continue to be enforced server-side; possession of client state alone must never confer privileged database access.
 
