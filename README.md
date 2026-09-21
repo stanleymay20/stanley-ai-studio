@@ -16,6 +16,18 @@ Current routes include:
 
 The home page is organized around recruiter signal strength, including a recruiter summary, featured work, project previews, videos, courses and books.
 
+## Production deployment
+
+Production hosting is configured for Netlify from the `main` branch.
+
+- build command: `npm run build`;
+- publish directory: `dist`;
+- runtime: Node.js 22;
+- SPA fallback routing and security headers are defined in `netlify.toml`;
+- public Supabase client configuration is supplied through the hosting environment rather than committed environment files.
+
+The custom production domain should only be switched after the independent Netlify deployment has been verified end to end.
+
 ## Administration
 
 The application currently exposes administrative routes for:
