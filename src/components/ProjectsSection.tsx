@@ -92,7 +92,7 @@ const ProjectsSection = () => {
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {visibleProjects.map((project, index) => {
+        {visibleProjects.slice(0, 4).map((project, index) => {
           const caseStudySlug = getCaseStudySlug(project.title);
 
           return (

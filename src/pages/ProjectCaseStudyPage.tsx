@@ -19,7 +19,7 @@ const ProjectCaseStudyPage = () => {
           path={`/projects/${slug || "not-found"}`}
         />
         <Header />
-        <main className="pt-28 pb-20">
+        <main id="main-content" tabIndex={-1} className="pt-28 pb-20">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <Link to="/projects" className="inline-flex items-center gap-2 text-primary hover:underline">
               <ArrowLeft className="h-4 w-4" />
@@ -45,7 +45,7 @@ const ProjectCaseStudyPage = () => {
       />
       <Header />
 
-      <main className="pt-24 pb-16">
+      <main id="main-content" tabIndex={-1} className="pt-24 pb-16">
         <article className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             to="/projects"

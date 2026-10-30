@@ -47,3 +47,7 @@ Updated only profile ad1eef75-6837-4aaa-97af-a0fda8f60da4, settings 79d45c2c-20d
 ## Remaining review boundaries
 
 This is a recruiter-content and frontend reliability update, not a complete security audit of the admin authentication system or an independent execution of every linked project. Existing custom-domain routing was preserved.
+
+## Publication verification
+
+The custom domain stanleyoseiwusu.com was verified in the browser after publication. The page renders the new introduction, selected case studies, corrected biography and CMS content, resolving the observed blank screen. The profile photo is retained. The Bayesian case-study link was exercised on the live site. A follow-up checks homepage gallery truncation and skip-link targets on all public content routes.
