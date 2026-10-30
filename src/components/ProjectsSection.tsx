@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, ExternalLink, Github, Play } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { portfolioFallbackProjects, type PortfolioProject } from "@/data/portfolioFallback";
+import { mergePortfolioProjects, type PortfolioProject } from "@/data/portfolioFallback";
 import { getCaseStudySlug } from "@/data/projectCaseStudies";
 
 const normalizeUrl = (url: string | null): string | null => {
@@ -66,7 +66,7 @@ const ProjectsSection = () => {
     );
   }
 
-  const visibleProjects = projects.length > 0 ? projects : portfolioFallbackProjects;
+  const visibleProjects = mergePortfolioProjects(projects);
   const usingFallback = projects.length === 0;
 
   return (

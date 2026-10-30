@@ -7,7 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
 import Seo from "@/components/Seo";
-import { portfolioFallbackProjects, type PortfolioProject } from "@/data/portfolioFallback";
+import { mergePortfolioProjects, type PortfolioProject } from "@/data/portfolioFallback";
 import { getCaseStudySlug } from "@/data/projectCaseStudies";
 
 const normalizeUrl = (url: string | null): string | null => {
@@ -43,7 +43,7 @@ const ProjectsPage = () => {
     fetchProjects();
   }, []);
 
-  const visibleProjects = projects.length > 0 ? projects : portfolioFallbackProjects;
+  const visibleProjects = mergePortfolioProjects(projects);
   const usingFallback = !loading && projects.length === 0;
   const featuredCount = visibleProjects.filter((project) => project.featured).length;
 
@@ -75,7 +75,7 @@ const ProjectsPage = () => {
               <p className="text-sm text-muted-foreground mt-2">
                 Showing {visibleProjects.length} project{visibleProjects.length !== 1 ? "s" : ""}
                 {featuredCount > 0 ? ` · ${featuredCount} featured` : ""}
-                {usingFallback ? " · verified public GitHub repositories" : ""}
+                {usingFallback ? " · selected GitHub repositories" : ""}
               </p>
             )}
           </div>

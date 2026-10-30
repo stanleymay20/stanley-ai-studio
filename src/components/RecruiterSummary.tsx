@@ -1,150 +1,40 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Download, Github, Linkedin, Mail, Loader2 } from "lucide-react";
+import { ArrowRight, Download, Github, Mail, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-
-interface ProfileData {
-  role_title: string | null;
-  value_proposition: string | null;
-  core_skills: string[] | null;
-  resume_url: string | null;
-  email: string | null;
-  linkedin: string | null;
-  github: string | null;
-}
-
-const FALLBACK_PROFILE: ProfileData = {
-  role_title: "AI Engineer & Data Scientist",
-  value_proposition:
-    "I build production-ready AI systems, data pipelines, and automation tools that turn complex data into reliable decision support.",
-  core_skills: ["Python", "Machine Learning", "NLP", "SQL", "TypeScript", "Supabase", "APIs", "Data Engineering"],
-  resume_url: null,
-  email: "stanleymay20@gmail.com",
-  linkedin: "https://www.linkedin.com/in/stanley-osei-wusu",
-  github: "https://github.com/stanleymay20",
-};
-
-const normalizeUrl = (url: string | null): string | null => {
-  if (!url || !url.trim()) return null;
-  const trimmed = url.trim();
-  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
-  return `https://${trimmed}`;
-};
+import { usePublicProfile } from "@/hooks/usePublicProfile";
+import { publicProfileFallback } from "@/data/publicProfile";
+import { publicUrl } from "@/lib/publicUrl";
 
 const RecruiterSummary = () => {
-  const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("profile")
-          .select("role_title, value_proposition, core_skills, resume_url, email, linkedin, github")
-          .limit(1)
-          .single();
-
-        if (error) throw error;
-        setProfile(data);
-      } catch (error) {
-        console.error("Profile fetch error:", error);
-        setProfile(FALLBACK_PROFILE);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="bg-card rounded-xl p-6 border border-border flex items-center justify-center min-h-[200px]">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
-  const visibleProfile = profile || FALLBACK_PROFILE;
-  const coreSkills = visibleProfile.core_skills?.length
-    ? visibleProfile.core_skills
-    : FALLBACK_PROFILE.core_skills!;
+  const profile = usePublicProfile();
+  const resume = publicUrl(profile.resume_url);
+  const github = publicUrl(profile.github);
+  const skills = profile.core_skills?.length ? profile.core_skills : publicProfileFallback.core_skills!;
 
   return (
-    <section
-      aria-labelledby="recruiter-summary-title"
-      className="bg-gradient-to-r from-card via-card to-primary/5 rounded-xl p-6 border border-border shadow-soft"
-    >
-      <div className="mb-3">
-        <p className="text-xs uppercase tracking-[0.18em] text-primary font-semibold mb-2">
-          Applied AI · Data Engineering · Decision Intelligence
-        </p>
-        <h2 id="recruiter-summary-title" className="text-2xl font-bold text-foreground mb-1">
-          {visibleProfile.role_title || FALLBACK_PROFILE.role_title}
-        </h2>
-        <p className="text-muted-foreground leading-relaxed">
-          {visibleProfile.value_proposition || FALLBACK_PROFILE.value_proposition}
-        </p>
+    <section aria-labelledby="recruiter-summary-title" className="relative overflow-hidden bg-card rounded-2xl p-6 sm:p-9 border border-border shadow-soft">
+      <div className="absolute top-0 left-0 h-1 w-full bg-primary" aria-hidden="true" />
+      <p className="text-xs uppercase tracking-[0.16em] text-primary font-semibold mb-5">Stanley Osei-Wusu · Applied AI & data science</p>
+      <h1 id="recruiter-summary-title" className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold tracking-tight leading-[1.15] text-foreground mb-5 max-w-xl">
+        {profile.role_title || publicProfileFallback.role_title}
+      </h1>
+      <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mb-6">
+        {profile.value_proposition || publicProfileFallback.value_proposition}
+      </p>
+      <div className="flex flex-wrap gap-2 mb-7" aria-label="Core skills">
+        {skills.map(skill => <span key={skill} className="bg-muted text-foreground px-3 py-1.5 rounded-md text-sm border border-border">{skill}</span>)}
       </div>
-
-      <div className="flex flex-wrap gap-2 mb-5" aria-label="Core skills">
-        {coreSkills.map((skill) => (
-          <span
-            key={skill}
-            className="bg-primary/10 text-primary px-3 py-1.5 rounded-full text-sm font-medium border border-primary/20 hover:bg-primary/20 transition-colors"
-          >
-            {skill}
-          </span>
-        ))}
+      <div className="flex gap-3 flex-wrap">
+        <Button asChild><Link to="/projects" className="gap-2">Explore my work<ArrowRight className="h-4 w-4" /></Link></Button>
+        <Button variant="outline" asChild><a href={`mailto:${profile.email || publicProfileFallback.email}`} className="gap-2"><Mail className="h-4 w-4" />Get in touch</a></Button>
+        {resume && <Button variant="outline" asChild><a href={resume} target="_blank" rel="noopener noreferrer" className="gap-2"><Download className="h-4 w-4" />View CV</a></Button>}
+        {github && <Button variant="ghost" asChild><a href={github} target="_blank" rel="noopener noreferrer" className="gap-2"><Github className="h-4 w-4" />GitHub</a></Button>}
       </div>
-
-      <div className="flex items-center gap-2 flex-wrap">
-        <Button size="sm" asChild>
-          <Link to="/projects" className="gap-2">
-            View selected work
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </Button>
-
-        {visibleProfile.github && (
-          <Button size="sm" variant="outline" asChild>
-            <a href={normalizeUrl(visibleProfile.github)!} target="_blank" rel="noopener noreferrer" className="gap-2">
-              <Github className="h-4 w-4" />
-              GitHub
-            </a>
-          </Button>
-        )}
-
-        {visibleProfile.linkedin && (
-          <Button size="sm" variant="outline" asChild>
-            <a href={normalizeUrl(visibleProfile.linkedin)!} target="_blank" rel="noopener noreferrer" className="gap-2">
-              <Linkedin className="h-4 w-4" />
-              LinkedIn
-            </a>
-          </Button>
-        )}
-
-        {visibleProfile.email && (
-          <Button size="sm" variant="outline" asChild>
-            <a href={`mailto:${visibleProfile.email}`} className="gap-2">
-              <Mail className="h-4 w-4" />
-              Contact
-            </a>
-          </Button>
-        )}
-
-        {visibleProfile.resume_url && (
-          <Button size="sm" variant="outline" asChild>
-            <a href={normalizeUrl(visibleProfile.resume_url)!} target="_blank" rel="noopener noreferrer" className="gap-2">
-              <Download className="h-4 w-4" />
-              Resume
-            </a>
-          </Button>
-        )}
+      <div className="mt-7 pt-5 border-t border-border flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted-foreground">
+        <span className="inline-flex items-center gap-2"><MapPin className="h-4 w-4" />Berlin–Brandenburg, Germany</span>
+        <span className="inline-flex items-center gap-2"><span className="h-2 w-2 bg-emerald-500 rounded-full" aria-hidden="true" />Open to working-student & internship roles</span>
       </div>
     </section>
   );
 };
-
 export default RecruiterSummary;

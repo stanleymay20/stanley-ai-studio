@@ -1,109 +1,14 @@
-import { useEffect, useState } from "react";
 import { Mail, Linkedin, Github } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { Skeleton } from "@/components/ui/skeleton";
+import { usePublicProfile } from "@/hooks/usePublicProfile";
+import { publicUrl } from "@/lib/publicUrl";
+import { publicProfileFallback } from "@/data/publicProfile";
 
-interface Profile {
-  name: string;
-  title: string;
-  bio: string | null;
-  email: string | null;
-  linkedin: string | null;
-  github: string | null;
-  photo_url: string | null;
-  skills: string[];
-}
-
-interface ProfileHeaderProps {
-  location?: string | null;
-}
-
-const FALLBACK_PROFILE: Profile = {
-  name: "Stanley Osei-Wusu",
-  title: "AI Engineer & Data Scientist",
-  bio: "I build applied AI, data-engineering, and decision-support systems with an emphasis on reliability, explainability, and real-world use.",
-  email: "stanleymay20@gmail.com",
-  linkedin: "https://www.linkedin.com/in/stanley-osei-wusu",
-  github: "https://github.com/stanleymay20",
-  photo_url: null,
-  skills: ["Python", "Machine Learning", "TypeScript", "SQL", "Supabase", "PostgreSQL", "APIs", "Data Engineering"],
-};
-
+interface ProfileHeaderProps { location?: string | null }
 const ProfileHeader = ({ location }: ProfileHeaderProps) => {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("profile")
-          .select("name, title, bio, email, linkedin, github, photo_url, skills")
-          .limit(1)
-          .single();
-
-        if (error) throw error;
-
-        const skillsData = data.skills;
-        const parsedSkills: string[] = Array.isArray(skillsData)
-          ? skillsData.filter((skill): skill is string => typeof skill === "string")
-          : [];
-
-        setProfile({
-          ...data,
-          skills: parsedSkills.length > 0 ? parsedSkills : FALLBACK_PROFILE.skills,
-        });
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-        setProfile(FALLBACK_PROFILE);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-  const formatUrl = (url: string | null): string => {
-    if (!url) return "";
-    if (url.startsWith("http://") || url.startsWith("https://")) return url;
-    return `https://${url}`;
-  };
-
-  const displayLocation = location?.trim() || "Berlin-Brandenburg, Germany";
-
-  if (loading) {
-    return (
-      <div className="bg-card rounded-lg p-6 mb-6 border border-border">
-        <div className="text-center mb-6">
-          <Skeleton className="w-24 h-24 rounded-full mx-auto mb-4" />
-          <Skeleton className="h-6 w-40 mx-auto mb-2" />
-          <Skeleton className="h-4 w-32 mx-auto mb-1" />
-          <Skeleton className="h-4 w-24 mx-auto" />
-          <div className="flex justify-center gap-4 mt-4">
-            <Skeleton className="h-5 w-5 rounded" />
-            <Skeleton className="h-5 w-5 rounded" />
-            <Skeleton className="h-5 w-5 rounded" />
-          </div>
-        </div>
-        <div className="mb-6">
-          <Skeleton className="h-5 w-20 mb-3" />
-          <Skeleton className="h-20 w-full" />
-        </div>
-        <div>
-          <Skeleton className="h-5 w-16 mb-3" />
-          <div className="flex flex-wrap gap-2">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Skeleton key={i} className="h-6 w-16 rounded-full" />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const visibleProfile = profile || FALLBACK_PROFILE;
-
+  const profile = usePublicProfile();
+  const visibleProfile = { ...profile, skills: Array.isArray(profile.skills) ? profile.skills.filter((item): item is string => typeof item === "string") : publicProfileFallback.core_skills! };
+  const displayLocation = location?.trim() || "Brandenburg an der Havel · Berlin, Germany";
+  const formatUrl = (url: string | null) => publicUrl(url) || undefined;
   return (
     <div className="bg-card rounded-lg p-6 mb-6 border border-border hover:shadow-medium transition-all duration-300">
       <div className="text-center mb-6">
@@ -112,7 +17,7 @@ const ProfileHeader = ({ location }: ProfileHeaderProps) => {
             <img
               src={visibleProfile.photo_url}
               alt={visibleProfile.name}
-              className="w-full h-full object-cover"
+              width="96" height="96" decoding="async" className="w-full h-full object-cover"
             />
           ) : (
             <span className="text-xl font-bold gradient-text">
@@ -120,7 +25,7 @@ const ProfileHeader = ({ location }: ProfileHeaderProps) => {
             </span>
           )}
         </div>
-        <h1 className="text-2xl font-bold text-foreground mb-1">{visibleProfile.name}</h1>
+        <h2 className="text-2xl font-bold text-foreground mb-1">{visibleProfile.name}</h2>
         <p className="text-primary font-medium mb-1">{visibleProfile.title}</p>
         <p className="text-sm text-muted-foreground">{displayLocation}</p>
 

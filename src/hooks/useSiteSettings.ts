@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface NavigationItem {
@@ -29,18 +30,18 @@ const defaultSettings: Omit<SiteSettings, 'id'> = {
   font_heading: 'Inter',
   font_body: 'Inter',
   navigation_items: [
-    { label: 'Home', href: '#home' },
-    { label: 'Projects', href: '#projects' },
-    { label: 'About', href: '#about' },
+    { label: 'Home', href: '/' },
+    { label: 'Projects', href: '/projects' },
+    { label: 'Courses', href: '/courses' },
     { label: 'Contact', href: '#contact' },
   ],
   footer_tagline: 'Data Scientist & AI Engineer passionate about building intelligent systems that solve real-world problems.',
-  footer_availability: 'Available for freelance projects',
+  footer_availability: 'Open to working-student and internship roles in AI and data',
   footer_copyright: 'All rights reserved.',
   footer_quick_links: [
-    { label: 'Projects', href: '#projects' },
-    { label: 'About', href: '#about' },
-    { label: 'Blog', href: '#blog' },
+    { label: 'Projects', href: '/projects' },
+    { label: 'Courses', href: '/courses' },
+    { label: 'Books', href: '/books' },
     { label: 'Contact', href: '#contact' },
   ],
   social_github: null,
@@ -50,7 +51,7 @@ const defaultSettings: Omit<SiteSettings, 'id'> = {
   site_title: 'Stanley Osei-Wusu | AI Engineer & Data Scientist',
   site_description: 'AI Engineer & Data Scientist portfolio showcasing machine learning projects.',
   og_image_url: null,
-  location: 'Based in Potsdam',
+  location: 'Brandenburg an der Havel · Berlin, Germany',
 };
 
 // Available Google Fonts for selection
@@ -78,69 +79,51 @@ export const availableFonts = [
 ];
 
 export function useSiteSettings() {
-  const [settings, setSettings] = useState<SiteSettings | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: settings = { id: '', ...defaultSettings }, isPending: loading, error, refetch } = useQuery({
+    queryKey: ['public-site-settings'],
+    queryFn: async ({ signal }): Promise<SiteSettings> => {
+      const { data, error } = await supabase.from('site_settings').select('*').limit(1).abortSignal(signal).maybeSingle();
+      if (error) throw error;
+      if (!data) return { id: '', ...defaultSettings };
+      return {
+        ...defaultSettings, ...data,
+        navigation_items: Array.isArray(data.navigation_items) ? data.navigation_items : defaultSettings.navigation_items,
+        footer_quick_links: Array.isArray(data.footer_quick_links) ? data.footer_quick_links : defaultSettings.footer_quick_links,
+      } as SiteSettings;
+    },
+    placeholderData: { id: '', ...defaultSettings },
+    staleTime: 60_000,
+    retry: false,
+  });
 
-  const fetchSettings = useCallback(async () => {
-    try {
-      const { data, error: fetchError } = await supabase
-        .from('site_settings')
-        .select('*')
-        .limit(1)
-        .maybeSingle();
-
-      if (fetchError) throw fetchError;
-
-      if (data) {
-        setSettings({
-          ...data,
-          navigation_items: Array.isArray(data.navigation_items) ? data.navigation_items : defaultSettings.navigation_items,
-          footer_quick_links: Array.isArray(data.footer_quick_links) ? data.footer_quick_links : defaultSettings.footer_quick_links,
-        } as SiteSettings);
-      } else {
-        // Use defaults if no row exists
-        setSettings({ id: '', ...defaultSettings });
-      }
-    } catch (err) {
-      console.error('Error fetching site settings:', err);
-      setError('Failed to load settings');
-      setSettings({ id: '', ...defaultSettings });
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchSettings();
-  }, [fetchSettings]);
-
+  const fontHeading = settings.font_heading;
+  const fontBody = settings.font_body;
   // Apply fonts to document
   useEffect(() => {
-    if (settings) {
+    {
       // Load Google Fonts dynamically
-      const fonts = [settings.font_heading, settings.font_body].filter((f, i, arr) => arr.indexOf(f) === i);
+      const fonts = [fontHeading, fontBody].filter((f, i, arr) => arr.indexOf(f) === i);
       const link = document.getElementById('google-fonts-link') as HTMLLinkElement;
       
       if (link) {
-        const fontQuery = fonts.map(f => f.replace(/\s+/g, '+')).join('&family=');
-        link.href = `https://fonts.googleapis.com/css2?family=${fontQuery}:wght@400;500;600;700&display=swap`;
+        const fontQuery = fonts.map(f => `${encodeURIComponent(f)}:wght@400;500;600;700`).join('&family=');
+        link.href = `https://fonts.googleapis.com/css2?family=${fontQuery}&display=swap`;
       } else {
         const newLink = document.createElement('link');
         newLink.id = 'google-fonts-link';
         newLink.rel = 'stylesheet';
-        const fontQuery = fonts.map(f => f.replace(/\s+/g, '+')).join('&family=');
-        newLink.href = `https://fonts.googleapis.com/css2?family=${fontQuery}:wght@400;500;600;700&display=swap`;
+        const fontQuery = fonts.map(f => `${encodeURIComponent(f)}:wght@400;500;600;700`).join('&family=');
+        newLink.href = `https://fonts.googleapis.com/css2?family=${fontQuery}&display=swap`;
         document.head.appendChild(newLink);
       }
 
       // Apply CSS variables
-      document.documentElement.style.setProperty('--font-heading', `"${settings.font_heading}", system-ui, sans-serif`);
-      document.documentElement.style.setProperty('--font-body', `"${settings.font_body}", system-ui, sans-serif`);
+      document.documentElement.style.setProperty('--font-heading', `"${fontHeading}", system-ui, sans-serif`);
+      document.documentElement.style.setProperty('--font-body', `"${fontBody}", system-ui, sans-serif`);
     }
-  }, [settings?.font_heading, settings?.font_body]);
+  }, [fontHeading, fontBody]);
 
-  return { settings, loading, error, refetch: fetchSettings };
+  return { settings, loading, error: error?.message ?? null, refetch };
 }
 
 // Admin hook for updating settings

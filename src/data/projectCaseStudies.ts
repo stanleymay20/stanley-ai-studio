@@ -15,6 +15,32 @@ export interface ProjectCaseStudy {
 
 export const projectCaseStudies: ProjectCaseStudy[] = [
   {
+    slug: "bayesian-marketing-mix",
+    title: "Bayesian Marketing Mix Modelling",
+    eyebrow: "Python · Bayesian Statistics · Marketing Analytics",
+    summary: "A seven-channel Bayesian marketing mix model that explores media contribution, delayed advertising effects and ROI under uncertainty.",
+    repository: "https://github.com/stanleymay20/haensel-ams-bayesian-mmm",
+    stack: ["Python", "PyMC", "ArviZ", "pandas", "NumPy"],
+    problem: "Marketing teams need to compare channels when spending is correlated and advertising effects can carry over into later periods. A single point estimate can hide how uncertain those comparisons are.",
+    approach: [
+      "Model seven marketing channels with geometric adstock to represent delayed effects.",
+      "Use PyMC and NUTS sampling to estimate posterior distributions rather than coefficients alone.",
+      "Include trend and seasonality controls and examine posterior predictive diagnostics.",
+      "Translate posterior samples into incremental revenue and ROI scenarios for channel comparison.",
+    ],
+    evidence: [
+      "The repository includes the solution notebook, requirements, input data, figures and a written report.",
+      "The README explains the model assumptions, prior and posterior analysis, ROI interpretation and limitations.",
+      "The analysis distinguishes channel contribution from spend efficiency and shows uncertainty around the estimates.",
+    ],
+    architecture: ["Channel spend and response data", "Adstock and time controls", "PyMC model and prior choices", "NUTS posterior sampling", "Predictive diagnostics", "ROI scenarios and interpretation"],
+    boundaries: [
+      "ROI estimates are model-based scenarios, not causal proof or a claim of realised business returns.",
+      "Limited observations and correlated channels increase attribution uncertainty.",
+      "Saturation was omitted in line with the challenge specification; experimental calibration would be needed for stronger causal conclusions.",
+    ],
+  },
+  {
     slug: "quantivis",
     title: "Quantivis",
     eyebrow: "Decision Intelligence & Data Quality",
@@ -135,6 +161,7 @@ export const getCaseStudyBySlug = (slug?: string) =>
 export const getCaseStudySlug = (title: string) => {
   const normalized = title.toLowerCase();
 
+  if (normalized.includes("bayesian") && normalized.includes("marketing")) return "bayesian-marketing-mix";
   if (normalized.startsWith("quantivis")) return "quantivis";
   if (normalized.startsWith("aicis")) return "aicis";
   if (normalized.startsWith("scrolllibrary")) return "scrolllibrary";

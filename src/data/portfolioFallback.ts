@@ -32,7 +32,7 @@ export const portfolioFallbackProjects: PortfolioProject[] = [
   {
     id: "github-scrolllibrary",
     title: "ScrollLibrary — AI Publishing OS",
-    subtitle: "Structured knowledge workflows and production-grade publishing automation",
+    subtitle: "Structured knowledge workflows and publishing workflows",
     description:
       "A React/TypeScript and Supabase platform combining structured AI outputs, knowledge extraction, assessment workflows, publishing automation, security controls, and CI quality gates.",
     tech_stack: ["React", "TypeScript", "Supabase", "Playwright"],
@@ -60,3 +60,10 @@ export const portfolioFallbackProjects: PortfolioProject[] = [
     demo_type: null,
   },
 ];
+
+
+/** Retain curated evidence projects even when the CMS has other published entries. */
+export function mergePortfolioProjects(projects: PortfolioProject[]): PortfolioProject[] {
+  const existingRepositories = new Set(projects.map(project => project.github_link?.replace(/\.git$|\/$/g, "").toLowerCase()));
+  return [...projects, ...portfolioFallbackProjects.filter(project => !existingRepositories.has(project.github_link?.replace(/\.git$|\/$/g, "").toLowerCase()))];
+}

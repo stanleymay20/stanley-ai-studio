@@ -1,106 +1,11 @@
-import { useEffect, useState } from "react";
 import { Award, Languages } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { Skeleton } from "@/components/ui/skeleton";
-
-interface MembershipItem {
-  organization: string;
-  role?: string;
-}
-
-interface LanguageItem {
-  language: string;
-  level: string;
-}
-
+import { usePublicProfile } from "@/hooks/usePublicProfile";
+import { jsonRecords } from "@/data/publicProfile";
 const MembershipsSection = () => {
-  const [memberships, setMemberships] = useState<MembershipItem[]>([]);
-  const [languages, setLanguages] = useState<LanguageItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('profile')
-          .select('memberships, languages')
-          .limit(1)
-          .single();
-
-        if (error) throw error;
-        
-        // Parse memberships - DB may use 'title' as the main field
-        if (Array.isArray(data?.memberships)) {
-          const parsedMemberships = data.memberships
-            .filter((item) => typeof item === 'object' && item !== null)
-            .map((item) => {
-              const obj = item as Record<string, unknown>;
-              // Handle both 'organization' and 'title' (legacy format)
-              const displayText = String(obj.organization || obj.title || '');
-              return {
-                organization: displayText,
-                role: obj.role ? String(obj.role) : undefined,
-              };
-            });
-          setMemberships(parsedMemberships);
-        }
-        
-        // Parse languages
-        if (Array.isArray(data?.languages)) {
-          const parsedLanguages = data.languages
-            .filter((item) => typeof item === 'object' && item !== null)
-            .map((item) => {
-              const obj = item as Record<string, unknown>;
-              return {
-                language: String(obj.language || ''),
-                level: String(obj.level || ''),
-              };
-            });
-          setLanguages(parsedLanguages);
-        }
-      } catch (error) {
-        console.error('Error fetching memberships:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="bg-card rounded-lg p-6 border border-border">
-        <div className="grid grid-cols-1 gap-6">
-          <div>
-            <Skeleton className="h-5 w-48 mb-4" />
-            <div className="space-y-3">
-              {[1, 2].map((i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <Skeleton className="w-6 h-6 rounded-lg" />
-                  <Skeleton className="h-4 w-48" />
-                </div>
-              ))}
-            </div>
-          </div>
-          <div>
-            <Skeleton className="h-5 w-24 mb-4" />
-            <div className="flex flex-wrap gap-2">
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-8 w-24 rounded-full" />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Don't render if both are empty
-  if (memberships.length === 0 && languages.length === 0) {
-    return null;
-  }
-
+  const profile = usePublicProfile();
+  const memberships = jsonRecords(profile.memberships).map(obj => ({ organization: String(obj.organization || obj.title || ""), role: obj.role ? String(obj.role) : undefined }));
+  const languages = jsonRecords(profile.languages).map(obj => ({ language: String(obj.language || ""), level: String(obj.level || "") }));
+  if (!memberships.length && !languages.length) return null;
   return (
     <div className="bg-card rounded-lg p-6 border border-border hover:shadow-medium transition-all duration-300">
       <div className="grid grid-cols-1 gap-6">

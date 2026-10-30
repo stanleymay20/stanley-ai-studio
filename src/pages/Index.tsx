@@ -6,12 +6,12 @@ import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
 import Seo from "@/components/Seo";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import { Loader2 } from "lucide-react";
+
 
 const EducationSection = lazy(() => import("@/components/EducationSection"));
 const CareerSection = lazy(() => import("@/components/CareerSection"));
 const MembershipsSection = lazy(() => import("@/components/MembershipsSection"));
-const FeaturedWork = lazy(() => import("@/components/FeaturedWork"));
+const SelectedWork = lazy(() => import("@/components/SelectedWork"));
 const ProjectsSection = lazy(() => import("@/components/ProjectsSection"));
 const VideosSection = lazy(() => import("@/components/VideosSection"));
 const CoursesSection = lazy(() => import("@/components/CoursesSection"));
@@ -22,35 +22,24 @@ const VerseOfTheDay = lazy(() =>
 
 const HOME_TITLE = "Stanley Osei-Wusu | AI Engineer & Data Scientist";
 const HOME_DESCRIPTION =
-  "AI Engineer and Data Scientist building production-ready AI systems, data platforms, automation, and decision-support tools with Python, TypeScript, Supabase, and machine learning.";
+  "Applied AI and data-science portfolio of Stanley Osei-Wusu. Explore project case studies in LLM workflows, data engineering and Bayesian modelling. Based in Berlin-Brandenburg.";
 
 const SectionFallback = ({ height = "h-32" }: { height?: string }) => (
   <div className={`${height} bg-card border border-border rounded-lg animate-pulse`} aria-hidden="true" />
 );
 
 const Index = () => {
-  const { settings, loading } = useSiteSettings();
-
-  if (loading) {
-    return (
-      <>
-        <Seo title={HOME_TITLE} description={HOME_DESCRIPTION} path="/" type="profile" />
-        <div className="min-h-screen bg-background flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
-      </>
-    );
-  }
+  const { settings } = useSiteSettings();
 
   return (
     <div className="min-h-screen bg-background">
       <Seo title={HOME_TITLE} description={HOME_DESCRIPTION} path="/" type="profile" />
       <Header />
 
-      <main className="pt-20">
+      <main id="main-content" tabIndex={-1} className="pt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div className="lg:col-span-4 animate-slide-in-left">
+            <div className="lg:col-span-4 order-2 lg:order-1">
               <ProfileHeader location={settings?.location} />
               <Suspense fallback={<SectionFallback />}>
                 <EducationSection />
@@ -59,10 +48,10 @@ const Index = () => {
               </Suspense>
             </div>
 
-            <div className="lg:col-span-8 space-y-6 animate-slide-in-right">
+            <div className="lg:col-span-8 space-y-8 order-1 lg:order-2">
               <RecruiterSummary />
               <Suspense fallback={<SectionFallback height="h-64" />}>
-                <FeaturedWork />
+                <SelectedWork />
               </Suspense>
               <Suspense fallback={<SectionFallback height="h-96" />}>
                 <ProjectsSection />

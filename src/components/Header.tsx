@@ -9,9 +9,9 @@ const Header = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    const savedTheme = localStorage.getItem("theme");
     const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    const initialTheme = savedTheme || systemTheme;
+    const initialTheme = savedTheme === "dark" || savedTheme === "light" ? savedTheme : systemTheme;
 
     setTheme(initialTheme);
     document.documentElement.classList.toggle("dark", initialTheme === "dark");
@@ -40,7 +40,8 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass-card border-b">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-b">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-background focus:p-3">Skip to content</a>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-3" aria-label="Stanley Osei-Wusu home">
@@ -61,6 +62,7 @@ const Header = () => {
               <Link
                 key={item.href}
                 to={item.href}
+                aria-current={isActive(item.href) ? "page" : undefined}
                 className={`transition-colors duration-200 font-medium ${
                   isActive(item.href)
                     ? "text-primary"
